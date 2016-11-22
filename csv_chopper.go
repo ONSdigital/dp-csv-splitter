@@ -10,9 +10,30 @@ import (
 	"strconv"
 
 	"github.com/Shopify/sarama"
+	"./model"
+	"encoding/csv"
+	"io"
+	"encoding/json"
 )
 
+const usage = "Usage: ./csv_chopper <csv_file>"
+
 func main() {
+
+	if len(os.Args) != 2 {
+		log.Fatal(usage)
+	}
+
+	csv_location := os.Args[1]
+	f, err := os.Open(csv_location)
+	if err != nil {
+		fmt.Printf("Could not open the csv file %s, %s", csv_location, err.Error())
+		os.Exit(1)
+	}
+
+	defer f.Close()
+
+	csvr := csv.NewReader(f)
 
 	config := sarama.NewConfig()
 	// Return specifies what channels will be populated.
@@ -36,18 +57,36 @@ func main() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
+
 	var enqueued, errors int
 	doneCh := make(chan struct{})
 	go func() {
 		for {
 
-			time.Sleep(500 * time.Millisecond)
+			row, err := csvr.Read()
+			if err != nil {
+				if err == io.EOF {
+					fmt.Println("EOF reached, no more records to process")
+					os.Exit(0)
+				} else {
+					fmt.Println("Error occored and cannot process anymore entry")
+					panic(err)
+				}
+			}
+
+			msg_json := model.Message{enqueued, row}
+			j, err := json.Marshal(msg_json)
+
+			if err != nil {
+				fmt.Printf("Could not create the json representation of message %s", msg_json)
+				panic(err)
+			}
 
 			strTime := strconv.Itoa(int(time.Now().Unix()))
 			msg := &sarama.ProducerMessage{
-				Topic: "important",
+				Topic: "",
 				Key:   sarama.StringEncoder(strTime),
-				Value: sarama.StringEncoder("An initial message"),
+				Value: sarama.ByteEncoder(j),
 			}
 			select {
 			case producer.Input() <- msg:
