@@ -14,6 +14,7 @@ import (
 	"encoding/csv"
 	"io"
 	"encoding/json"
+	"strings"
 )
 
 const usage = "Usage: ./csv_chopper <csv_file>"
@@ -74,7 +75,7 @@ func main() {
 				}
 			}
 
-			msg_json := model.Message{enqueued, row}
+			msg_json := model.Message{Index: enqueued, Row: strings.Join(row[:], ",")}
 			j, err := json.Marshal(msg_json)
 
 			if err != nil {
@@ -84,7 +85,7 @@ func main() {
 
 			strTime := strconv.Itoa(int(time.Now().Unix()))
 			msg := &sarama.ProducerMessage{
-				Topic: "",
+				Topic: "test",
 				Key:   sarama.StringEncoder(strTime),
 				Value: sarama.ByteEncoder(j),
 			}
