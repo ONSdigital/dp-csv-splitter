@@ -1,18 +1,23 @@
 dp-csv-splitter
 ================
 
+A utility program that aims to stream a large CSV file and splits it into Kafka messages to be consumed by the
+[database-loader](https://github.com/ONSdigital/dp-dd-database-loader).
+
 ### Getting started
 
-TODO
+First grab the code
 
-### Configuration
+`go get github.com/ONSdigital/dp-csv-splitter`
 
-An overview of the configuration options available, either as a table of
-environment variables, or with a link to a configuration guide.
+Once in the directory, compile and run the program
 
-| Environment variable | Default | Description
-| -------------------- | ------- | -----------
-| BIND_ADDR            | :8080   | The host and port to bind to
+```
+go build csv_chopper.go
+./csv_chopper <path_to_large_csv>
+```
+
+The project includes a small data set in the `sample_csv` directory for test usage.
 
 ### Contributing
 

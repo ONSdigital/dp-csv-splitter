@@ -15,6 +15,7 @@ import (
 	"io"
 	"encoding/json"
 	"strings"
+	//"bytes"
 )
 
 const usage = "Usage: ./csv_chopper <csv_file>"
@@ -77,6 +78,7 @@ func main() {
 
 			msg_json := model.Message{Index: enqueued, Row: strings.Join(row[:], ",")}
 			j, err := json.Marshal(msg_json)
+			//n := bytes.IndexByte(j, 0)
 
 			if err != nil {
 				fmt.Printf("Could not create the json representation of message %s", msg_json)
@@ -92,7 +94,7 @@ func main() {
 			select {
 			case producer.Input() <- msg:
 				enqueued++
-				fmt.Println("Produce message")
+				fmt.Println("Produce message", msg_json)
 			case err := <-producer.Errors():
 				errors++
 				fmt.Println("Failed to produce message:", err)
