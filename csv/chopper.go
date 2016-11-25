@@ -1,4 +1,4 @@
-package main
+package csv
 
 import (
 	"fmt"
@@ -10,11 +10,11 @@ import (
 	"strconv"
 
 	"github.com/Shopify/sarama"
-	"./model"
 	"encoding/csv"
 	"io"
 	"encoding/json"
 	"strings"
+	"github.com/ONSdigital/dp-csv-splitter/model"
 )
 
 const usage = "Usage: ./csv_chopper <csv_file>"
@@ -105,3 +105,4 @@ func main() {
 	<-doneCh
 	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
 }
+
