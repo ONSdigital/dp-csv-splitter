@@ -4,18 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
-	"time"
-
-	"strconv"
-
-	"github.com/Shopify/sarama"
-	"./model"
 	"encoding/csv"
-	"io"
-	"encoding/json"
-	"strings"
-	//"bytes"
+	"github.com/ONSdigital/dp-csv-splitter/model"
+	"github.com/Shopify/sarama"
 )
 
 const usage = "Usage: ./csv_chopper <csv_file>"
@@ -56,54 +47,6 @@ func main() {
 		}
 	}()
 
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
+	model.Loop(csvr, producer)
 
-
-	var enqueued, errors int
-	doneCh := make(chan struct{})
-	go func() {
-		for {
-
-			row, err := csvr.Read()
-			if err != nil {
-				if err == io.EOF {
-					fmt.Println("EOF reached, no more records to process")
-					os.Exit(0)
-				} else {
-					fmt.Println("Error occored and cannot process anymore entry")
-					panic(err)
-				}
-			}
-
-			msg_json := model.Message{Index: enqueued, Row: strings.Join(row[:], ",")}
-			j, err := json.Marshal(msg_json)
-			//n := bytes.IndexByte(j, 0)
-
-			if err != nil {
-				fmt.Printf("Could not create the json representation of message %s", msg_json)
-				panic(err)
-			}
-
-			strTime := strconv.Itoa(int(time.Now().Unix()))
-			msg := &sarama.ProducerMessage{
-				Topic: "test",
-				Key:   sarama.StringEncoder(strTime),
-				Value: sarama.ByteEncoder(j),
-			}
-			select {
-			case producer.Input() <- msg:
-				enqueued++
-				fmt.Println("Produce message", msg_json)
-			case err := <-producer.Errors():
-				errors++
-				fmt.Println("Failed to produce message:", err)
-			case <-signals:
-				doneCh <- struct{}{}
-			}
-		}
-	}()
-
-	<-doneCh
-	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
 }
