@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"github.com/ONSdigital/dp-csv-splitter/handlers"
 	"github.com/ONSdigital/go-ns/log"
+	"github.com/ONSdigital/dp-csv-splitter/aws"
 )
 
 func main() {
@@ -27,6 +28,8 @@ func main() {
 		"BIND_ADDR": bindAddr,
 		"FILE_PROVIDER_URL": fileProviderUrl,
 	})
+
+	handlers.AWSCli = aws.NewClient()
 
 	if err := http.ListenAndServe(bindAddr, router); err != nil {
 		log.Error(err, nil)
