@@ -1,9 +1,9 @@
 package model
 
 import (
-	"os"
 	"encoding/csv"
 	"fmt"
+	"os"
 )
 
 type CsvConsumer struct {
@@ -19,7 +19,7 @@ func CreateCsvConsumer() *CsvConsumer {
 		os.Exit(1)
 	}
 
-	return &CsvConsumer{f, csv.NewReader(f) }
+	return &CsvConsumer{f, csv.NewReader(f)}
 }
 
 func (c *CsvConsumer) Close() {

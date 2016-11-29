@@ -1,16 +1,16 @@
 package model
 
 import (
-	"github.com/Shopify/sarama"
 	"encoding/csv"
-	"io"
-	"fmt"
-	"os"
-	"strings"
 	"encoding/json"
-	"strconv"
-	"time"
+	"fmt"
+	"github.com/Shopify/sarama"
+	"io"
 	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
@@ -48,7 +48,7 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 			case producer.Input() <- msg:
 				enqueued++
 				fmt.Println("Produce message", msg_json)
-			case err := <- producer.Errors():
+			case err := <-producer.Errors():
 				errors++
 				fmt.Println("Failed to produce message:", err)
 			}

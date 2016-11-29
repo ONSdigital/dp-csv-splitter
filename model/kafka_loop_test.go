@@ -1,13 +1,13 @@
 package model
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/Shopify/sarama"
-	"github.com/Shopify/sarama/mocks"
 	"encoding/csv"
 	"encoding/json"
+	"github.com/Shopify/sarama"
+	"github.com/Shopify/sarama/mocks"
+	. "github.com/smartystreets/goconvey/convey"
 	"strings"
+	"testing"
 )
 
 func TestSpec(t *testing.T) {

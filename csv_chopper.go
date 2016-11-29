@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/ONSdigital/dp-csv-splitter/model"
 	"log"
 	"os"
-	"github.com/ONSdigital/dp-csv-splitter/model"
 	"os/signal"
 )
 
