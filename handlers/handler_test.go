@@ -25,7 +25,7 @@ func newMockAwsClient() *MockAWSCli {
 	return &MockAWSCli{requestedFiles: make(map[string] int)}
 }
 
-func (mock *MockAWSCli) GetFile(fileURI string) {
+func (mock *MockAWSCli) GetFile(fileURI string) (io.Reader, error) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -35,6 +35,7 @@ func (mock *MockAWSCli) GetFile(fileURI string) {
 		fmt.Println("inside else")
 		mock.requestedFiles[fileURI] = 1
 	}
+	return bytes.NewReader([]byte{}), nil
 }
 
 func (mock *MockAWSCli) getTotalInvocations() int {

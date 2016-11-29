@@ -43,7 +43,11 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	AWSCli.GetFile(chopperReq.URI)
+	_, err = AWSCli.GetFile(chopperReq.URI)
+	if err != nil {
+		SplitterErrorResponse("Failed with some AWS stuff", 400)
+	}
+
 	SplitterSuccessResponse(SuccessMsg, 200).writeErrorResponse(w)
 }
 
