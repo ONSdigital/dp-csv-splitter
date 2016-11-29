@@ -17,7 +17,7 @@ func main() {
 	csv_consumer := model.CreateCsvConsumer()
 	producer := model.Producer()
 
-	defer csv_consumer.File.Close()
+	defer csv_consumer.Close()
 	defer func() {
 		if err := producer.Close(); err != nil {
 			panic(err)

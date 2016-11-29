@@ -7,8 +7,8 @@ import (
 )
 
 type CsvConsumer struct {
-	File *os.File
-	Reader *csv.Reader
+	ioReader *os.File
+	Reader   *csv.Reader
 }
 
 func CreateCsvConsumer() *CsvConsumer {
@@ -20,4 +20,8 @@ func CreateCsvConsumer() *CsvConsumer {
 	}
 
 	return &CsvConsumer{f, csv.NewReader(f) }
+}
+
+func (c *CsvConsumer) Close() {
+	*c.ioReader.Close()
 }
