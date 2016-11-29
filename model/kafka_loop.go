@@ -11,15 +11,11 @@ import (
 	"strconv"
 	"time"
 	"log"
-	"os/signal"
 )
 
 func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
 
 	var enqueued, errors int
-	doneCh := make(chan struct{})
 	go func() {
 		for {
 
@@ -29,7 +25,7 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 					fmt.Println("EOF reached, no more records to process")
 					os.Exit(0)
 				} else {
-					fmt.Println("Error occored and cannot process anymore entry")
+					fmt.Println("Error occored and cannot process anymore entry", err.Error())
 					panic(err)
 				}
 			}
@@ -55,17 +51,14 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 			case err := <- producer.Errors():
 				errors++
 				fmt.Println("Failed to produce message:", err)
-			case <-signals:
-				doneCh <- struct{}{}
 			}
 		}
 	}()
 
-	<-doneCh
 	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
 }
 
-func Producer() sarama.AsyncProducer {
+func Producer(address string) sarama.AsyncProducer {
 	config := sarama.NewConfig()
 	// Return specifies what channels will be populated.
 	// If they are set to true, you must read from
@@ -73,7 +66,7 @@ func Producer() sarama.AsyncProducer {
 	// The total number of times to retry sending a message (default 3).
 	config.Producer.Retry.Max = 5
 	config.Producer.RequiredAcks = sarama.WaitForAll
-	brokers := []string{"localhost:9092"}
+	brokers := []string{address}
 	producer, err := sarama.NewAsyncProducer(brokers, config)
 	if err != nil {
 		panic(err)

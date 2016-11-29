@@ -19,6 +19,11 @@ go build csv_chopper.go
 
 The project includes a small data set in the `sample_csv` directory for test usage.
 
+### Configuration
+
+You can set the address for the connection to Kafka by setting the environment variable `KAFKA_ADDR`.
+If this environment variable is not set, the default value of `localhost:9092` will be used
+
 ### Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for details.

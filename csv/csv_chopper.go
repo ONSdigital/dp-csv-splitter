@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"github.com/ONSdigital/dp-csv-splitter/model"
+	"os/signal"
 )
 
 const usage = "Usage: ./csv_chopper <csv_file>"
@@ -14,15 +15,27 @@ func main() {
 		log.Fatal(usage)
 	}
 
-	csv_consumer := model.CreateCsvConsumer()
-	producer := model.Producer()
+	addr := "localhost:9092"
 
-	defer csv_consumer.File.Close()
+	if v := os.Getenv("KAFKA_ADDR"); len(v) > 0 {
+		addr = v
+	}
+
+	csv_consumer := model.CreateCsvConsumer()
+	producer := model.Producer(addr)
+
+	defer csv_consumer.Close()
 	defer func() {
 		if err := producer.Close(); err != nil {
 			panic(err)
 		}
 	}()
 
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
+	doneCh := make(chan struct{})
+
 	model.Loop(csv_consumer.Reader, producer)
+
+	<-doneCh
 }
