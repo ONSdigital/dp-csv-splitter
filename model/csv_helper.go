@@ -23,5 +23,5 @@ func CreateCsvConsumer() *CsvConsumer {
 }
 
 func (c *CsvConsumer) Close() {
-	*c.ioReader.Close()
+	c.ioReader.Close()
 }
