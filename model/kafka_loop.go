@@ -58,7 +58,7 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
 }
 
-func Producer() sarama.AsyncProducer {
+func Producer(address string) sarama.AsyncProducer {
 	config := sarama.NewConfig()
 	// Return specifies what channels will be populated.
 	// If they are set to true, you must read from
@@ -66,7 +66,7 @@ func Producer() sarama.AsyncProducer {
 	// The total number of times to retry sending a message (default 3).
 	config.Producer.Retry.Max = 5
 	config.Producer.RequiredAcks = sarama.WaitForAll
-	brokers := []string{"localhost:9092"}
+	brokers := []string{address}
 	producer, err := sarama.NewAsyncProducer(brokers, config)
 	if err != nil {
 		panic(err)

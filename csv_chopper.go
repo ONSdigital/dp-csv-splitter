@@ -15,8 +15,14 @@ func main() {
 		log.Fatal(usage)
 	}
 
+	addr := "localhost:9092"
+
+	if v := os.Getenv("KAFKA_ADDR"); len(v) > 0 {
+		addr = v
+	}
+
 	csv_consumer := model.CreateCsvConsumer()
-	producer := model.Producer()
+	producer := model.Producer(addr)
 
 	defer csv_consumer.Close()
 	defer func() {
