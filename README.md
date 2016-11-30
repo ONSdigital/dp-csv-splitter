@@ -13,16 +13,20 @@ First grab the code
 Once in the directory, compile and run the program
 
 ```
-go build csv_chopper.go
-./csv_chopper <path_to_large_csv>
+make debug
 ```
 
 The project includes a small data set in the `sample_csv` directory for test usage.
 
 ### Configuration
 
-You can set the address for the connection to Kafka by setting the environment variable `KAFKA_ADDR`.
-If this environment variable is not set, the default value of `localhost:9092` will be used
+| Environment variable | Default                 | Description
+| -------------------- | ----------------------- | ----------------------------------------------------
+| BIND_ADDR            | ":21000"                | The host and port to bind to.
+| KAFKA_ADDR           | "http://localhost:9092" | The Kafka address to send messages to.
+| S3_BUCKET            | "dp-csv-splitter-1"     | The name of AWS S3 bucket to get the csv files from.
+| AWS_REGION           | "eu-west-1"             | The AWS region to use.
+| TOPIC_NAME           | "test"                  | The name of the Kafka topic to send the messages to.
 
 ### Contributing
 
