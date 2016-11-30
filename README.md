@@ -1,8 +1,11 @@
 dp-csv-splitter
 ================
 
-A utility program that aims to stream a large CSV file and splits it into Kafka messages to be consumed by the
-[database-loader](https://github.com/ONSdigital/dp-dd-database-loader).
+Application retrieves a specified CSV file from AWS s3 bucket, splits it into rows sending each as a individual message
+to the configured Kafka Topic to be consumed by the [database-loader]
+(https://github.com/ONSdigital/dp-dd-database-loader).
+
+The ```/splitter`` endpoint accepts HTTP POST request with a SplitterRequest body ```{"uri": "$YOU_FILE_NAME$"}```
 
 ### Getting started
 
@@ -14,6 +17,13 @@ Once in the directory, compile and run the program
 
 ```
 make debug
+```
+
+You will need to have Kafka set up locally (instructions to follow).
+
+Example:
+```
+curl -H "Content-Type: application/json" -X POST -d '{"uri": "$YOU_FILE_NAME$"}' http://localhost:21000/splitter
 ```
 
 The project includes a small data set in the `sample_csv` directory for test usage.

@@ -30,7 +30,7 @@ const SplitterURI = "/splitter"
 type ByteSliceReader func(r io.Reader) ([]byte, error)
 
 var awsClient = aws.NewClient()
-var csvProcessor = splitter.NewCSVProcessor()
+var csvProcessor splitter.CSVProcessor = splitter.NewCSVProcessor()
 var requestBodyReader ByteSliceReader = ioutil.ReadAll
 
 // Handle CSV splitter handler. Get the requested file from AWS S3, split it and send each row to the configured Kafka Topic.
