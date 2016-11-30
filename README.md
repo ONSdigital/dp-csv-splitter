@@ -1,8 +1,11 @@
 dp-csv-splitter
 ================
 
-A utility program that aims to stream a large CSV file and splits it into Kafka messages to be consumed by the
-[database-loader](https://github.com/ONSdigital/dp-dd-database-loader).
+Application retrieves a specified CSV file from AWS s3 bucket, splits it into rows sending each as a individual message
+to the configured Kafka Topic to be consumed by the [database-loader]
+(https://github.com/ONSdigital/dp-dd-database-loader).
+
+The ```/splitter`` endpoint accepts HTTP POST request with a SplitterRequest body ```{"uri": "$YOU_FILE_NAME$"}```
 
 ### Getting started
 
@@ -13,16 +16,27 @@ First grab the code
 Once in the directory, compile and run the program
 
 ```
-go build csv_chopper.go
-./csv_chopper <path_to_large_csv>
+make debug
+```
+
+You will need to have Kafka set up locally (instructions to follow).
+
+Example:
+```
+curl -H "Content-Type: application/json" -X POST -d '{"uri": "$YOU_FILE_NAME$"}' http://localhost:21000/splitter
 ```
 
 The project includes a small data set in the `sample_csv` directory for test usage.
 
 ### Configuration
 
-You can set the address for the connection to Kafka by setting the environment variable `KAFKA_ADDR`.
-If this environment variable is not set, the default value of `localhost:9092` will be used
+| Environment variable | Default                 | Description
+| -------------------- | ----------------------- | ----------------------------------------------------
+| BIND_ADDR            | ":21000"                | The host and port to bind to.
+| KAFKA_ADDR           | "http://localhost:9092" | The Kafka address to send messages to.
+| S3_BUCKET            | "dp-csv-splitter-1"     | The name of AWS S3 bucket to get the csv files from.
+| AWS_REGION           | "eu-west-1"             | The AWS region to use.
+| TOPIC_NAME           | "test"                  | The name of the Kafka topic to send the messages to.
 
 ### Contributing
 

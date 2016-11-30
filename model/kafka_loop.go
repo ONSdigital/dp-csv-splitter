@@ -1,16 +1,17 @@
 package model
 
 import (
-	"github.com/Shopify/sarama"
 	"encoding/csv"
-	"io"
-	"fmt"
-	"os"
-	"strings"
 	"encoding/json"
+	"fmt"
+	"github.com/ONSdigital/dp-csv-splitter/config"
+	"github.com/ONSdigital/go-ns/log"
+	"github.com/Shopify/sarama"
+	"io"
+	"os"
 	"strconv"
+	"strings"
 	"time"
-	"log"
 )
 
 func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
@@ -40,7 +41,7 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 
 			strTime := strconv.Itoa(int(time.Now().Unix()))
 			msg := &sarama.ProducerMessage{
-				Topic: "test",
+				Topic: config.TopicName,
 				Key:   sarama.StringEncoder(strTime),
 				Value: sarama.ByteEncoder(j),
 			}
@@ -48,14 +49,17 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 			case producer.Input() <- msg:
 				enqueued++
 				fmt.Println("Produce message", msg_json)
-			case err := <- producer.Errors():
+			case err := <-producer.Errors():
 				errors++
 				fmt.Println("Failed to produce message:", err)
 			}
 		}
 	}()
 
-	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
+	log.Debug("Kafka Loop details", log.Data{
+		"Enqueued": enqueued,
+		"Errors":   errors,
+	})
 }
 
 func Producer(address string) sarama.AsyncProducer {
