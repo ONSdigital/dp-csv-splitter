@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	config.Load()
+
 	router := pat.New()
 	router.Post(handlers.SplitterURI, handlers.Handle)
 

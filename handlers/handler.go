@@ -37,29 +37,29 @@ var requestBodyReader ByteSliceReader = ioutil.ReadAll
 func Handle(w http.ResponseWriter, req *http.Request) {
 	bytes, err := requestBodyReader(req.Body)
 	if err != nil {
-		SplitterErrorResponse(ReadRequestBodyErrMsg, 400).writeResponse(w)
+		WriteResponse(w, SplitterResponse{ReadRequestBodyErrMsg}, 400)
 		return
 	}
 
 	var chopperReq SplitterRequest
 	if err := json.Unmarshal(bytes, &chopperReq); err != nil {
-		SplitterErrorResponse(UnmarshalBodyErrMsg, 400).writeResponse(w)
+		WriteResponse(w, SplitterResponse{UnmarshalBodyErrMsg}, 400)
 		return
 	}
 
 	if len(chopperReq.URI) == 0 {
-		SplitterErrorResponse(URIParamMissingMsg, 400).writeResponse(w)
+		WriteResponse(w, SplitterResponse{URIParamMissingMsg}, 400)
 		return
 	}
 
 	log.Debug("Processing splitter request", log.Data{"URI:": chopperReq.URI})
 	awsReader, err := awsClient.GetFile(chopperReq.URI)
 	if err != nil {
-		SplitterErrorResponse(err.Error(), 400).writeResponse(w)
+		WriteResponse(w, SplitterResponse{err.Error()}, 400)
 		return
 	}
 	csvProcessor.Process(csv.NewReader(awsReader))
-	SplitterSuccessResponse(SuccessMsg, 200).writeResponse(w)
+	WriteResponse(w, SplitterResponse{SuccessMsg}, 200)
 }
 
 // SetReader set the handler response reader

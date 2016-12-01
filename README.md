@@ -5,7 +5,7 @@ Application retrieves a specified CSV file from AWS s3 bucket, splits it into ro
 to the configured Kafka Topic to be consumed by the [database-loader]
 (https://github.com/ONSdigital/dp-dd-database-loader).
 
-The ```/splitter`` endpoint accepts HTTP POST request with a SplitterRequest body ```{"uri": "$YOU_FILE_NAME$"}```
+The ```/splitter``` endpoint accepts HTTP POST request with a SplitterRequest body ```{"uri": "$YOU_FILE_NAME$"}```
 
 ### Getting started
 

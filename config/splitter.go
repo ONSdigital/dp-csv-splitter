@@ -47,6 +47,11 @@ func init() {
 		TopicName = topicNameEnv
 	}
 
+
+}
+
+func Load() {
+	// Will call init().
 	log.Debug("dp-csv-splitter Configuration", log.Data{
 		bindAddrKey:  BindAddr,
 		kafkaAddrKey: KafkaAddr,
