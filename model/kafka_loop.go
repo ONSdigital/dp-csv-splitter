@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func Loop(csvr *csv.Reader, producer sarama.SyncProducer) {
+func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 
 	var enqueued, errors int
 	start := time.Now()
@@ -47,9 +47,13 @@ func Loop(csvr *csv.Reader, producer sarama.SyncProducer) {
 			Value: sarama.ByteEncoder(j),
 		}
 
-		_, _, err = producer.SendMessage(msg)
-		if err != nil {
-			panic(err)
+		select {
+		case producer.Input() <- msg:
+			enqueued++
+			//fmt.Println("Produce message", msg_json)
+		case err := <-producer.Errors():
+			errors++
+			fmt.Println("Failed to produce message:", err)
 		}
 
 		enqueued++
@@ -58,7 +62,7 @@ func Loop(csvr *csv.Reader, producer sarama.SyncProducer) {
 	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
 }
 
-func Producer(address string) sarama.SyncProducer {
+func Producer(address string) sarama.AsyncProducer {
 	config := sarama.NewConfig()
 	// Return specifies what channels will be populated.
 	// If they are set to true, you must read from
@@ -67,7 +71,7 @@ func Producer(address string) sarama.SyncProducer {
 	config.Producer.Retry.Max = 5
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	brokers := []string{address}
-	producer, err := sarama.NewSyncProducer(brokers, config)
+	producer, err := sarama.NewAsyncProducer(brokers, config)
 	if err != nil {
 		panic(err)
 	}
