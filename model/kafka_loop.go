@@ -4,16 +4,71 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"github.com/Shopify/sarama"
+	"github.com/streadway/amqp"
 	"io"
 	"log"
 	"os"
-	"strconv"
 	"strings"
-	"time"
+	"flag"
 )
 
-func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
+var (
+	uri          = flag.String("uri", "amqp://guest:guest@localhost:5672/", "AMQP URI")
+	exchangeName = flag.String("exchange", "test", "Durable AMQP exchange name")
+	exchangeType = flag.String("exchange-type", "direct", "Exchange type - direct|fanout|topic|x-custom")
+	routingKey   = flag.String("key", "test-key", "AMQP routing key")
+	body         = flag.String("body", "foobar", "Body of message")
+	reliable     = flag.Bool("reliable", true, "Wait for the publisher confirmation before exiting")
+)
+
+func init() {
+	flag.Parse()
+}
+
+
+
+func Loop(csvr *csv.Reader) {
+
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	if err != nil {
+		log.Fatalf("%s: %s", "Failed to connect to RabbitMQ", err)
+	}
+	defer conn.Close()
+
+	log.Printf("got Connection, getting Channel")
+	channel, err := conn.Channel()
+	if err != nil {
+		fmt.Printf("Channel: %s", err)
+		os.Exit(1)
+	}
+
+	log.Printf("got Channel, declaring %q Exchange (%q)", *exchangeType, *exchangeName)
+	if err := channel.ExchangeDeclare(
+		*exchangeName,     // name
+		*exchangeType, // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // noWait
+		nil,          // arguments
+	); err != nil {
+		fmt.Printf("Exchange Declare: %s", err)
+		os.Exit(1)
+	}
+
+	if *reliable {
+		log.Printf("enabling publishing confirms.")
+		if err := channel.Confirm(false); err != nil {
+			fmt.Printf("Channel could not be put into confirm mode: %s", err)
+			os.Exit(1)
+		}
+
+		confirms := channel.NotifyPublish(make(chan amqp.Confirmation, 1))
+
+		defer confirmOne(confirms)
+	}
+
+	log.Printf("declared Exchange, publishing %dB body (%q)", len(*body), *body)
 
 	var enqueued, errors int
 	go func() {
@@ -32,45 +87,44 @@ func Loop(csvr *csv.Reader, producer sarama.AsyncProducer) {
 
 			msg_json := Message{Index: enqueued, Row: strings.Join(row[:], ",")}
 			j, err := json.Marshal(msg_json)
-
+			//
 			if err != nil {
 				fmt.Printf("Could not create the json representation of message %s", msg_json)
 				panic(err)
 			}
 
-			strTime := strconv.Itoa(int(time.Now().Unix()))
-			msg := &sarama.ProducerMessage{
-				Topic: "test",
-				Key:   sarama.StringEncoder(strTime),
-				Value: sarama.ByteEncoder(j),
+			if err = channel.Publish(
+				*exchangeName,   // publish to an exchange
+				*routingKey, // routing to 0 or more queues
+				false,      // mandatory
+				false,      // immediate
+				amqp.Publishing{
+					Headers:         amqp.Table{},
+					ContentType:     "application/json",
+					ContentEncoding: "",
+					Body:            j,
+					DeliveryMode:    amqp.Persistent, // 1=non-persistent, 2=persistent
+					Priority:        0,              // 0-9
+					// a bunch of application/implementation-specific fields
+				},
+			); err != nil {
+				fmt.Printf("Exchange Publish: %s", err)
+				os.Exit(1)
 			}
-			select {
-			case producer.Input() <- msg:
-				enqueued++
-				fmt.Println("Produce message", msg_json)
-			case err := <-producer.Errors():
-				errors++
-				fmt.Println("Failed to produce message:", err)
-			}
+			println("Published message, yay!")
 		}
 	}()
 
 	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
 }
 
-func Producer(address string) sarama.AsyncProducer {
-	config := sarama.NewConfig()
-	// Return specifies what channels will be populated.
-	// If they are set to true, you must read from
-	// config.Producer.Return.Successes = true
-	// The total number of times to retry sending a message (default 3).
-	config.Producer.Retry.Max = 5
-	config.Producer.RequiredAcks = sarama.WaitForAll
-	brokers := []string{address}
-	producer, err := sarama.NewAsyncProducer(brokers, config)
-	if err != nil {
-		panic(err)
-	}
+func confirmOne(confirms <-chan amqp.Confirmation) {
+	log.Printf("waiting for confirmation of one publishing")
 
-	return producer
+	if confirmed := <-confirms; confirmed.Ack {
+		log.Printf("confirmed delivery with delivery tag: %d", confirmed.DeliveryTag)
+	} else {
+		log.Printf("failed delivery of delivery tag: %d", confirmed.DeliveryTag)
+	}
 }
+
