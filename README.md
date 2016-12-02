@@ -21,8 +21,9 @@ KAFKA=localhost:9092`
 
 Install Kafka:
 ```
-brew install kafka
+brew install kafka`
 ```
+
 ```
 brew services start kafka
 brew services start zookeeper
