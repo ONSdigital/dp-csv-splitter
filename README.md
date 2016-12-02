@@ -14,27 +14,28 @@ First grab the code
 `go get github.com/ONSdigital/dp-csv-splitter`
 
 You will need to have Kafka set up locally. Set the following env variables (the example here uses the default ports)
-``
+
+```
 ZOOKEEPER=localhost:2181
-KAFKA=localhost:9092`
+KAFKA=localhost:9092
 ```
 
 Install Kafka:
-```
-brew install kafka`
-```
 
 ```
+brew install kafka
 brew services start kafka
 brew services start zookeeper
 ```
+
 Run the Kafka console consumer
 ```
 kafka-console-consumer --zookeeper $ZOOKEEPER --topic test
 ```
+
 Run the Kafka console consumer
-``
-kafka-console-producer --broker-list $KAFKA --topic test`
+```
+kafka-console-producer --broker-list $KAFKA --topic test
 ```
 
 Run the the splitter
