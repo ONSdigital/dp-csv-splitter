@@ -10,22 +10,21 @@ import (
 	"os"
 	"strings"
 	"flag"
+	"time"
 )
 
 var (
-	uri          = flag.String("uri", "amqp://guest:guest@localhost:5672/", "AMQP URI")
+	uri = flag.String("uri", "amqp://guest:guest@localhost:5672/", "AMQP URI")
 	exchangeName = flag.String("exchange", "test", "Durable AMQP exchange name")
 	exchangeType = flag.String("exchange-type", "direct", "Exchange type - direct|fanout|topic|x-custom")
-	routingKey   = flag.String("key", "test-key", "AMQP routing key")
-	body         = flag.String("body", "foobar", "Body of message")
-	reliable     = flag.Bool("reliable", true, "Wait for the publisher confirmation before exiting")
+	routingKey = flag.String("key", "test-key", "AMQP routing key")
+	body = flag.String("body", "foobar", "Body of message")
+	reliable = flag.Bool("reliable", true, "Wait for the publisher confirmation before exiting")
 )
 
 func init() {
 	flag.Parse()
 }
-
-
 
 func Loop(csvr *csv.Reader) {
 
@@ -44,40 +43,37 @@ func Loop(csvr *csv.Reader) {
 
 	log.Printf("got Channel, declaring %q Exchange (%q)", *exchangeType, *exchangeName)
 	if err := channel.ExchangeDeclare(
-		*exchangeName,     // name
+		*exchangeName, // name
 		*exchangeType, // type
-		true,         // durable
-		false,        // auto-deleted
-		false,        // internal
-		false,        // noWait
-		nil,          // arguments
+		true, // durable
+		false, // auto-deleted
+		false, // internal
+		false, // noWait
+		nil, // arguments
 	); err != nil {
 		fmt.Printf("Exchange Declare: %s", err)
 		os.Exit(1)
 	}
 
-	if *reliable {
-		log.Printf("enabling publishing confirms.")
-		if err := channel.Confirm(false); err != nil {
-			fmt.Printf("Channel could not be put into confirm mode: %s", err)
-			os.Exit(1)
-		}
 
-		confirms := channel.NotifyPublish(make(chan amqp.Confirmation, 1))
-
-		defer confirmOne(confirms)
+	if err := channel.Confirm(false); err != nil {
+		fmt.Printf("Channel could not be put into confirm mode: %s", err)
+		os.Exit(1)
 	}
 
 	log.Printf("declared Exchange, publishing %dB body (%q)", len(*body), *body)
 
 	var enqueued, errors int
-	go func() {
+	start := time.Now()
+	//go func() {
 		for {
 
 			row, err := csvr.Read()
 			if err != nil {
 				if err == io.EOF {
-					fmt.Println("EOF reached, no more records to process")
+					elapsed := time.Since(start)
+					fmt.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
+					fmt.Println("EOF reached, no more records to process", elapsed.String())
 					os.Exit(0)
 				} else {
 					fmt.Println("Error occored and cannot process anymore entry", err.Error())
@@ -93,29 +89,35 @@ func Loop(csvr *csv.Reader) {
 				panic(err)
 			}
 
+			//fmt.Println("About to publish something")
+
 			if err = channel.Publish(
-				*exchangeName,   // publish to an exchange
+				*exchangeName, // publish to an exchange
 				*routingKey, // routing to 0 or more queues
-				false,      // mandatory
-				false,      // immediate
+				false, // mandatory
+				false, // immediate
 				amqp.Publishing{
 					Headers:         amqp.Table{},
 					ContentType:     "application/json",
 					ContentEncoding: "",
 					Body:            j,
 					DeliveryMode:    amqp.Persistent, // 1=non-persistent, 2=persistent
-					Priority:        0,              // 0-9
+					Priority:        0, // 0-9
 					// a bunch of application/implementation-specific fields
 				},
 			); err != nil {
 				fmt.Printf("Exchange Publish: %s", err)
 				os.Exit(1)
 			}
-			println("Published message, yay!")
-		}
-	}()
 
-	log.Printf("Enqueued: %d; errors: %d\n", enqueued, errors)
+			enqueued++
+			//confirms := channel.NotifyPublish(make(chan amqp.Confirmation, 1))
+
+			//confirmOne(confirms)
+			//println("Published message, yay!", enqueued)
+		}
+	//}()
+
 }
 
 func confirmOne(confirms <-chan amqp.Confirmation) {
