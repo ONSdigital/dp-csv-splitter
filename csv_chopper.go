@@ -4,7 +4,7 @@ import (
 	"github.com/ONSdigital/dp-csv-splitter/model"
 	"log"
 	"os"
-	"os/signal"
+	//"os/signal"
 )
 
 const usage = "Usage: ./csv_chopper <csv_file>"
@@ -30,12 +30,12 @@ func main() {
 			panic(err)
 		}
 	}()
-
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-	doneCh := make(chan struct{})
+	//
+	//signals := make(chan os.Signal, 1)
+	//signal.Notify(signals, os.Interrupt)
+	//doneCh := make(chan struct{})
 
 	model.Loop(csv_consumer.Reader, producer)
 
-	<-doneCh
+	//<-doneCh
 }
