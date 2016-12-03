@@ -38,7 +38,7 @@ func createMessage(index int, row []string) Message {
 }
 
 func (p *Processor) Process(r io.Reader) {
-	go func() {
+
 		csvR := csv.NewReader(r)
 		var index = 0
 		var errorCount = 0
@@ -86,7 +86,7 @@ func (p *Processor) Process(r io.Reader) {
 			"Enqueued": index,
 			"Errors":   errorCount,
 		})
-	}()
+
 }
 
 
