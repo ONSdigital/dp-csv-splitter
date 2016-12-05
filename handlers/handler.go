@@ -1,78 +1,92 @@
 package handlers
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
-	"github.com/ONSdigital/go-ns/log"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
+	"errors"
+	"github.com/ONSdigital/go-ns/log"
 )
 
-// URIParamMissingMsg error message for URI parameter missing from request body
-const URIParamMissingMsg = "Please specify a uri parameter."
+const csvFileExt = ".csv"
 
-// SuccessMsg success message for splitter requests.
-const SuccessMsg = "Your file has been sent to the Chopper"
+type requestBodyReader func(r io.Reader) ([]byte, error)
 
-// ReadRequestBodyErrMsg error message for case where the request body could not be read.
-const ReadRequestBodyErrMsg = "Could not read body"
+// SplitterResponse struct defines the response for the /splitter API.
+type SplitterResponse struct {
+	Message string `json:"message,omitempty"`
+}
 
-// UnmarshalBodyErrMsg error message for any errors attempting to unmarshalling the request body.
-const UnmarshalBodyErrMsg = "Failed to unmarshal body"
+// SplitterRequest struct defines a splitter request
+type SplitterRequest struct {
+	FilePath string `json:"filePath"`
+}
 
-// SplitterURI the URI of the CSV splitter endpoint.
-const SplitterURI = "/splitter"
-
-// ByteSliceReader type for reading byte slices.
-type ByteSliceReader func(r io.Reader) ([]byte, error)
-
-var awsClient = aws.NewClient()
+var unsupoprtedFileTypeErr = errors.New("Unspported file type.")
+var awsClientErr = errors.New("Error while attempting get to get from from AWS s3 bucket.")
+var filePathParamMissingErr = errors.New("No filePath value was provided.")
+var awsService = aws.NewService()
 var csvProcessor splitter.CSVProcessor = splitter.NewCSVProcessor()
-var requestBodyReader ByteSliceReader = ioutil.ReadAll
+var readSplitterRequestBody requestBodyReader = ioutil.ReadAll
+
+// Responses
+var splitterRespReadReqBodyErr = SplitterResponse{"Error when attempting to read request body."}
+var splitterRespUnmarshalBody = SplitterResponse{"Error when attempting to unmarshal request body."}
+var splitterRespFilePathMissing = SplitterResponse{"No filePath parameter was specified in the request body."}
+var splitterRespUnsupportedFileType = SplitterResponse{"Unspported file type. Please specify a filePath for a .csv file."}
+var splitterResponseSuccess = SplitterResponse{"Your request is being processed."}
 
 // Handle CSV splitter handler. Get the requested file from AWS S3, split it and send each row to the configured Kafka Topic.
 func Handle(w http.ResponseWriter, req *http.Request) {
-	bytes, err := requestBodyReader(req.Body)
+	bytes, err := readSplitterRequestBody(req.Body)
+	defer req.Body.Close()
+
 	if err != nil {
-		SplitterErrorResponse(ReadRequestBodyErrMsg, 400).writeResponse(w)
+		log.Error(err, nil)
+		WriteResponse(w, splitterRespReadReqBodyErr, http.StatusBadRequest)
 		return
 	}
 
-	var chopperReq SplitterRequest
-	if err := json.Unmarshal(bytes, &chopperReq); err != nil {
-		SplitterErrorResponse(UnmarshalBodyErrMsg, 400).writeResponse(w)
+	var splitterReq SplitterRequest
+	if err := json.Unmarshal(bytes, &splitterReq); err != nil {
+		log.Error(err, nil)
+		WriteResponse(w, splitterRespUnmarshalBody, http.StatusBadRequest)
 		return
 	}
 
-	if len(chopperReq.URI) == 0 {
-		SplitterErrorResponse(URIParamMissingMsg, 400).writeResponse(w)
+	if len(splitterReq.FilePath) == 0 {
+		log.Error(filePathParamMissingErr, nil)
+		WriteResponse(w, splitterRespFilePathMissing, http.StatusBadRequest)
 		return
 	}
 
-	log.Debug("Processing splitter request", log.Data{"URI:": chopperReq.URI})
-	awsReader, err := awsClient.GetFile(chopperReq.URI)
+	if fileType := filepath.Ext(splitterReq.FilePath); fileType != csvFileExt {
+		log.Error(unsupoprtedFileTypeErr, log.Data{"expected": csvFileExt, "actual": fileType})
+		WriteResponse(w, splitterRespUnsupportedFileType, http.StatusBadRequest)
+		return
+	}
+	awsReader, err := awsService.GetCSV(splitterReq.FilePath)
 	if err != nil {
-		SplitterErrorResponse(err.Error(), 400).writeResponse(w)
+		log.Error(awsClientErr, log.Data{"details": err.Error()})
+		WriteResponse(w, SplitterResponse{err.Error()}, http.StatusBadRequest)
 		return
 	}
-	csvProcessor.Process(csv.NewReader(awsReader))
-	SplitterSuccessResponse(SuccessMsg, 200).writeResponse(w)
+	csvProcessor.Process(awsReader)
+	WriteResponse(w, splitterResponseSuccess, http.StatusOK)
 }
 
-// SetReader set the handler response reader
-func SetReader(reader ByteSliceReader) {
-	requestBodyReader = reader
+func setReader(reader requestBodyReader) {
+	readSplitterRequestBody = reader
 }
 
-// SetCSVProcessor set the CSV processor implementation.
-func SetCSVProcessor(p splitter.CSVProcessor) {
+func setCSVProcessor(p splitter.CSVProcessor) {
 	csvProcessor = p
 }
 
-// SetAWSClient set the AWS client implementation.
-func SetAWSClient(c aws.AWSClient) {
-	awsClient = c
+func setAWSClient(c aws.AWSService) {
+	awsService = c
 }
