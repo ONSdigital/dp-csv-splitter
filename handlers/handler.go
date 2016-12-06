@@ -2,14 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
+	"github.com/ONSdigital/go-ns/log"
+	"github.com/ONSdigital/go-ns/handlers/response"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"errors"
-	"github.com/ONSdigital/go-ns/log"
 )
 
 const csvFileExt = ".csv"
@@ -27,7 +28,7 @@ type SplitterRequest struct {
 }
 
 var unsupoprtedFileTypeErr = errors.New("Unspported file type.")
-var awsClientErr = errors.New("Error while attempting get to get from from AWS s3 bucket.")
+var awsServiceErr = errors.New("Error while attempting get to get from from AWS s3 bucket.")
 var filePathParamMissingErr = errors.New("No filePath value was provided.")
 var awsService = aws.NewService()
 var csvProcessor splitter.CSVProcessor = splitter.NewCSVProcessor()
@@ -47,36 +48,36 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		log.Error(err, nil)
-		WriteResponse(w, splitterRespReadReqBodyErr, http.StatusBadRequest)
+		response.WriteJSON(w, splitterRespReadReqBodyErr, http.StatusBadRequest)
 		return
 	}
 
 	var splitterReq SplitterRequest
 	if err := json.Unmarshal(bytes, &splitterReq); err != nil {
 		log.Error(err, nil)
-		WriteResponse(w, splitterRespUnmarshalBody, http.StatusBadRequest)
+		response.WriteJSON(w, splitterRespUnmarshalBody, http.StatusBadRequest)
 		return
 	}
 
 	if len(splitterReq.FilePath) == 0 {
 		log.Error(filePathParamMissingErr, nil)
-		WriteResponse(w, splitterRespFilePathMissing, http.StatusBadRequest)
+		response.WriteJSON(w, splitterRespFilePathMissing, http.StatusBadRequest)
 		return
 	}
 
 	if fileType := filepath.Ext(splitterReq.FilePath); fileType != csvFileExt {
 		log.Error(unsupoprtedFileTypeErr, log.Data{"expected": csvFileExt, "actual": fileType})
-		WriteResponse(w, splitterRespUnsupportedFileType, http.StatusBadRequest)
+		response.WriteJSON(w, splitterRespUnsupportedFileType, http.StatusBadRequest)
 		return
 	}
 	awsReader, err := awsService.GetCSV(splitterReq.FilePath)
 	if err != nil {
-		log.Error(awsClientErr, log.Data{"details": err.Error()})
-		WriteResponse(w, SplitterResponse{err.Error()}, http.StatusBadRequest)
+		log.Error(awsServiceErr, log.Data{"details": err.Error()})
+		response.WriteJSON(w, SplitterResponse{err.Error()}, http.StatusBadRequest)
 		return
 	}
 	csvProcessor.Process(awsReader)
-	WriteResponse(w, splitterResponseSuccess, http.StatusOK)
+	response.WriteJSON(w, splitterResponseSuccess, http.StatusOK)
 }
 
 func setReader(reader requestBodyReader) {
@@ -87,6 +88,6 @@ func setCSVProcessor(p splitter.CSVProcessor) {
 	csvProcessor = p
 }
 
-func setAWSClient(c aws.AWSService) {
+func setAWSService(c aws.AWSService) {
 	awsService = c
 }
