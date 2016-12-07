@@ -39,17 +39,36 @@ func createMessage(index int, row []string) Message {
 
 func (p *Processor) Process(r io.Reader) {
 
-		csvR := csv.NewReader(r)
-		var index = 0
-		var errorCount = 0
+	csvR := csv.NewReader(r)
+	var index = 0
+	var errorCount = 0
 
-		csvLoop:
-		for {
+	var batchSize = 100
+	var batchNumber = 1
+
+	var isFinalBatch bool = false;
+
+	batchLoop:
+	for {
+		// each batch
+
+		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
+
+		log.Debug("Processing batch number " + strconv.Itoa(batchNumber) + " index: " + strconv.Itoa(index), nil)
+
+		createBatchLoop:
+		for batchIndex := 0; batchIndex < batchSize; batchIndex++ {
+			// each row in the batch
+
 			row, err := csvR.Read()
 			if err != nil {
 				if err == io.EOF {
 					log.Debug("EOF reached, no more records to process", nil)
-					break csvLoop
+					isFinalBatch = true
+					msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
+
+					log.Debug(strconv.Itoa(batchIndex) + " messages in this batch.", nil)
+					break createBatchLoop
 				} else {
 					fmt.Println("Error occored and cannot process anymore entry", err.Error())
 					panic(err)
@@ -73,26 +92,28 @@ func (p *Processor) Process(r io.Reader) {
 				Value: sarama.ByteEncoder(messageJSON),
 			}
 
-			partition, offset, err := Producer.SendMessage(producerMsg)
-			if err != nil {
-				log.Error(err, log.Data{
-					"details": "Failed to add message to Kafka",
-					"message": messageJSON,
-				})
-			}
+			msgs[batchIndex] = producerMsg
 
-			log.Debug("Message sent", log.Data{
-				"Partition": partition,
-				"Offset": offset,
+			index++
+		}
+
+		err := Producer.SendMessages(msgs)
+		if err != nil {
+			log.Error(err, log.Data{
+				"details": "Failed to add messages to Kafka",
 			})
 		}
 
-		log.Debug("Kafka Loop details", log.Data{
-			"Enqueued": index,
-			"Errors":   errorCount,
-		})
+		if isFinalBatch {
+			break batchLoop
+		}
 
+		batchNumber++
+	}
+
+	log.Debug("Kafka Loop details", log.Data{
+		"Enqueued": index,
+		"Errors":   errorCount,
+	})
 }
-
-
 
