@@ -48,9 +48,8 @@ func (p *Processor) Process(r io.Reader) {
 batchLoop:
 	for { // each batch
 
-		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
-
 		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
+		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
 	createBatchLoop:
 		for batchIndex := 0; batchIndex < batchSize; batchIndex++ { // each row in the batch
@@ -68,23 +67,8 @@ batchLoop:
 					panic(err)
 				}
 			}
-			messageJSON, err := json.Marshal(createMessage(index, row))
 
-			if err != nil {
-				log.Error(err, log.Data{
-					"details": "Could not create the json representation of message",
-					"message": messageJSON,
-				})
-				panic(err)
-			}
-
-			strTime := strconv.Itoa(int(time.Now().Unix()))
-			producerMsg := &sarama.ProducerMessage{
-				Topic: config.TopicName,
-				Key:   sarama.StringEncoder(strTime),
-				Value: sarama.ByteEncoder(messageJSON),
-			}
-
+			producerMsg := createMessageFromRow(row, index)
 			msgs[batchIndex] = producerMsg
 			index++
 		}
@@ -106,4 +90,24 @@ batchLoop:
 	log.Debug("Kafka Loop details", log.Data{
 		"Enqueued": index,
 	})
+}
+func createMessageFromRow(row []string, index int) sarama.ProducerMessage {
+	messageJSON, err := json.Marshal(createMessage(index, row))
+
+	if err != nil {
+		log.Error(err, log.Data{
+			"details": "Could not create the json representation of message",
+			"message": messageJSON,
+		})
+		panic(err)
+	}
+
+	strTime := strconv.Itoa(int(time.Now().Unix()))
+	producerMsg := &sarama.ProducerMessage{
+		Topic: config.TopicName,
+		Key:   sarama.StringEncoder(strTime),
+		Value: sarama.ByteEncoder(messageJSON),
+	}
+
+	return producerMsg
 }
