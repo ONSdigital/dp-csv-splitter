@@ -1,15 +1,15 @@
 package splitter
 
 import (
-	"github.com/Shopify/sarama"
-	"io"
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/go-ns/log"
-	"encoding/csv"
-	"fmt"
-	"strings"
-	"encoding/json"
+	"github.com/Shopify/sarama"
+	"io"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -41,24 +41,19 @@ func (p *Processor) Process(r io.Reader) {
 
 	csvR := csv.NewReader(r)
 	var index = 0
-	var errorCount = 0
-
 	var batchSize = 100
 	var batchNumber = 1
+	var isFinalBatch = false
 
-	var isFinalBatch bool = false;
-
-	batchLoop:
-	for {
-		// each batch
+batchLoop:
+	for { // each batch
 
 		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
-		log.Debug("Processing batch number " + strconv.Itoa(batchNumber) + " index: " + strconv.Itoa(index), nil)
+		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
 
-		createBatchLoop:
-		for batchIndex := 0; batchIndex < batchSize; batchIndex++ {
-			// each row in the batch
+	createBatchLoop:
+		for batchIndex := 0; batchIndex < batchSize; batchIndex++ { // each row in the batch
 
 			row, err := csvR.Read()
 			if err != nil {
@@ -66,15 +61,13 @@ func (p *Processor) Process(r io.Reader) {
 					log.Debug("EOF reached, no more records to process", nil)
 					isFinalBatch = true
 					msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
-
-					log.Debug(strconv.Itoa(batchIndex) + " messages in this batch.", nil)
+					log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
 					break createBatchLoop
 				} else {
 					fmt.Println("Error occored and cannot process anymore entry", err.Error())
 					panic(err)
 				}
 			}
-
 			messageJSON, err := json.Marshal(createMessage(index, row))
 
 			if err != nil {
@@ -93,7 +86,6 @@ func (p *Processor) Process(r io.Reader) {
 			}
 
 			msgs[batchIndex] = producerMsg
-
 			index++
 		}
 
@@ -113,7 +105,5 @@ func (p *Processor) Process(r io.Reader) {
 
 	log.Debug("Kafka Loop details", log.Data{
 		"Enqueued": index,
-		"Errors":   errorCount,
 	})
 }
-
