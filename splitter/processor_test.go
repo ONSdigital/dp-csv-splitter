@@ -1,14 +1,14 @@
 package splitter_test
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/Shopify/sarama/mocks"
-	"github.com/Shopify/sarama"
-	"github.com/ONSdigital/dp-csv-splitter/splitter"
-	"strings"
 	"errors"
+	"github.com/ONSdigital/dp-csv-splitter/splitter"
+	"github.com/Shopify/sarama"
+	"github.com/Shopify/sarama/mocks"
+	. "github.com/smartystreets/goconvey/convey"
 	"log"
+	"strings"
+	"testing"
 )
 
 var exampleCsvLine string = "36929,,,,,,,,,,,,,,,,,2014,2014,,Year,,,,,,,,,,,,,,,NACE,NACE,,08,08 - Other mining and quarrying,,,,Prodcom Elements,Prodcom Elements,,UK manufacturer sales ID,UK manufacturer sales LABEL,,\n\n"
@@ -22,8 +22,10 @@ func TestProcessor(t *testing.T) {
 
 	Convey("Given a mock producer with a single expected intput that succeeds", t, func() {
 		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
-		mockProducer.ExpectInputAndSucceed();
-		splitter.Producer = mockProducer
+		mockProducer.ExpectInputAndSucceed()
+		splitter.NewKafkaProducer = func() sarama.AsyncProducer {
+			return mockProducer
+		}
 
 		var Processor = splitter.NewCSVProcessor()
 
@@ -41,8 +43,10 @@ func TestProcessor(t *testing.T) {
 
 	Convey("Given a mock producer with a single expected intput that fails", t, func() {
 		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
-		mockProducer.ExpectInputAndFail(errors.New(""));
-		splitter.Producer = mockProducer
+		mockProducer.ExpectInputAndFail(errors.New(""))
+		splitter.NewKafkaProducer = func() sarama.AsyncProducer {
+			return mockProducer
+		}
 
 		var Processor = splitter.NewCSVProcessor()
 

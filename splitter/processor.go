@@ -1,19 +1,53 @@
 package splitter
 
 import (
-	"github.com/Shopify/sarama"
-	"io"
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/go-ns/log"
-	"encoding/csv"
-	"fmt"
-	"strings"
-	"encoding/json"
+	"github.com/Shopify/sarama"
+	"io"
 	"strconv"
+	"strings"
 	"time"
 )
 
-var Producer sarama.AsyncProducer
+// NewKafkaProducer is a factory method for instances of AsyncProducer
+var NewKafkaProducer func() sarama.AsyncProducer = newKafkaProducer
+
+func newKafkaProducer() sarama.AsyncProducer {
+	kafkaConfig := sarama.NewConfig()
+	kafkaConfig.Producer.Retry.Max = 5
+	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
+	//kafkaConfig.Producer.Return.Successes = true
+
+	producer, err := sarama.NewAsyncProducer([]string{config.KafkaAddr}, kafkaConfig)
+	if err != nil {
+		log.Error(err, log.Data{"message": "Failed to create message producer."})
+	}
+
+	go func() {
+		for err := range producer.Errors() {
+			log.Debug("Error sending CSV line to Kafka", log.Data{
+				"error": err.Err.Error(),
+			})
+		}
+
+		log.Debug("Error range ended", log.Data{})
+	}()
+
+	go func() {
+		for success := range producer.Successes() {
+			log.Debug("Success sending csv line to Kafka", log.Data{
+				"offset": success.Offset,
+			})
+		}
+		log.Debug("Success range ended", log.Data{})
+	}()
+
+	return producer
+}
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
@@ -39,55 +73,51 @@ func createMessage(index int, row []string) Message {
 
 func (p *Processor) Process(r io.Reader) {
 
-		csvR := csv.NewReader(r)
-		var index = 0
-		var errorCount = 0
+	kafkaProducer := NewKafkaProducer()
+	defer func() {
+		if err := kafkaProducer.Close(); err != nil {
+			log.Error(err, log.Data{})
+		}
+	}()
 
-		csvLoop:
-		for {
-			row, err := csvR.Read()
-			if err != nil {
-				if err == io.EOF {
-					log.Debug("EOF reached, no more records to process", nil)
-					break csvLoop
-				} else {
-					fmt.Println("Error occored and cannot process anymore entry", err.Error())
-					panic(err)
-				}
-			}
+	csvR := csv.NewReader(r)
+	var index = 0
 
-			messageJSON, err := json.Marshal(createMessage(index, row))
-
-			if err != nil {
-				log.Error(err, log.Data{
-					"details": "Could not create the json representation of message",
-					"message": messageJSON,
-				})
+csvLoop:
+	for {
+		row, err := csvR.Read()
+		if err != nil {
+			if err == io.EOF {
+				log.Debug("EOF reached, no more records to process", nil)
+				break csvLoop
+			} else {
+				fmt.Println("Error occored and cannot process anymore entry", err.Error())
 				panic(err)
-			}
-
-			strTime := strconv.Itoa(int(time.Now().Unix()))
-			producerMsg := &sarama.ProducerMessage{
-				Topic: config.TopicName,
-				Key:   sarama.StringEncoder(strTime),
-				Value: sarama.ByteEncoder(messageJSON),
-			}
-
-			select {
-			case Producer.Input() <- producerMsg:
-				index++
-			case err := <-Producer.Errors():
-				errorCount++
-				log.Error(err, nil)
 			}
 		}
 
-		log.Debug("Kafka Loop details", log.Data{
-			"Enqueued": index,
-			"Errors":   errorCount,
-		})
+		messageJSON, err := json.Marshal(createMessage(index, row))
 
+		if err != nil {
+			log.Error(err, log.Data{
+				"details": "Could not create the json representation of message",
+				"message": messageJSON,
+			})
+			panic(err)
+		}
+
+		strTime := strconv.Itoa(int(time.Now().Unix()))
+		producerMsg := &sarama.ProducerMessage{
+			Topic: config.TopicName,
+			Key:   sarama.StringEncoder(strTime),
+			Value: sarama.ByteEncoder(messageJSON),
+		}
+
+		index++
+		kafkaProducer.Input() <- producerMsg
+	}
+
+	log.Debug("Kafka Loop details", log.Data{
+		"Enqueued": index,
+	})
 }
-
-
-
