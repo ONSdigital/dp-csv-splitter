@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var Producer sarama.AsyncProducer
+var Producer sarama.SyncProducer
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
@@ -73,13 +73,18 @@ func (p *Processor) Process(r io.Reader) {
 				Value: sarama.ByteEncoder(messageJSON),
 			}
 
-			select {
-			case Producer.Input() <- producerMsg:
-				index++
-			case err := <-Producer.Errors():
-				errorCount++
-				log.Error(err, nil)
+			partition, offset, err := Producer.SendMessage(producerMsg)
+			if err != nil {
+				log.Error(err, log.Data{
+					"details": "Failed to add message to Kafka",
+					"message": messageJSON,
+				})
 			}
+
+			log.Debug("Message sent", log.Data{
+				"Partition": partition,
+				"Offset": offset,
+			})
 		}
 
 		log.Debug("Kafka Loop details", log.Data{
