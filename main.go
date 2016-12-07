@@ -21,7 +21,7 @@ func main() {
 
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.Retry.Max = 5
-	kafkaConfig.Producer.RequiredAcks = sarama.WaitForLocal
+	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	kafkaConfig.Producer.Return.Successes = true
 	kafkaConfig.Producer.Return.Errors = true
 
