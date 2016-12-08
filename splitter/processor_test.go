@@ -1,6 +1,7 @@
 package splitter_test
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/Shopify/sarama"
@@ -27,7 +28,31 @@ func TestProcessor(t *testing.T) {
 
 	Convey("Given a mock producer with a single expected intput that succeeds", t, func() {
 		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
-		mockProducer.ExpectInputAndSucceed()
+
+		mockProducer.ExpectInputWithCheckerFunctionAndSucceed(func(val []byte) error {
+
+			var message *splitter.Message
+			json.Unmarshal(val, &message)
+
+			if message.DatasetID != datasetID {
+				return errors.New("Dataset ID was not added to the message.")
+			}
+			if message.Filename != filename {
+				return errors.New("CSV filename was not added to the message.")
+			}
+			if message.StartTime != startTime.UTC().Unix() {
+				return errors.New("Start time was not added to the message.")
+			}
+			if message.Index != 0 {
+				return errors.New("Index was not added to the message.")
+			}
+			if message.Row != exampleCsvLine {
+				return errors.New("CSV row was not added to the message.")
+			}
+
+			return nil
+		})
+
 		splitter.Producer = mockProducer
 
 		var Processor = splitter.NewCSVProcessor()
