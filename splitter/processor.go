@@ -41,7 +41,7 @@ func (p *Processor) Process(r io.Reader) {
 
 	csvR := csv.NewReader(r)
 	var index = 0
-	var batchSize = 100
+	var batchSize = config.BatchSize
 	var batchNumber = 1
 	var isFinalBatch = false
 
@@ -91,7 +91,7 @@ batchLoop:
 		"Enqueued": index,
 	})
 }
-func createMessageFromRow(row []string, index int) sarama.ProducerMessage {
+func createMessageFromRow(row []string, index int) *sarama.ProducerMessage {
 	messageJSON, err := json.Marshal(createMessage(index, row))
 
 	if err != nil {
