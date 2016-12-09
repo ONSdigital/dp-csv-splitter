@@ -1,16 +1,23 @@
 package splitter
 
 import (
-	"encoding/csv"
+	"github.com/Shopify/sarama"
+	"io"
 	"github.com/ONSdigital/dp-csv-splitter/config"
-	"github.com/ONSdigital/dp-csv-splitter/model"
-	"os"
-	"os/signal"
+	"github.com/ONSdigital/go-ns/log"
+	"encoding/csv"
+	"fmt"
+	"strings"
+	"encoding/json"
+	"strconv"
+	"time"
 )
+
+var Producer sarama.AsyncProducer
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
-	Process(csvReader *csv.Reader)
+	Process(r io.Reader)
 }
 
 // Processor implementation of the CSVProcessor interface.
@@ -21,21 +28,66 @@ func NewCSVProcessor() *Processor {
 	return &Processor{}
 }
 
-// Process implementation of the Process function.
-func (p *Processor) Process(csvReader *csv.Reader) {
-	producer := model.Producer(config.KafkaAddr)
-
-	defer func() {
-		if err := producer.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-	doneCh := make(chan struct{})
-
-	model.Loop(csvReader, producer)
-
-	<-doneCh
+type Message struct {
+	Index int    `json:"index"`
+	Row   string `json:"datapoint"`
 }
+
+func createMessage(index int, row []string) Message {
+	return Message{Index: index, Row: strings.Join(row[:], ",")}
+}
+
+func (p *Processor) Process(r io.Reader) {
+
+		csvR := csv.NewReader(r)
+		var index = 0
+		var errorCount = 0
+
+		csvLoop:
+		for {
+			row, err := csvR.Read()
+			if err != nil {
+				if err == io.EOF {
+					log.Debug("EOF reached, no more records to process", nil)
+					break csvLoop
+				} else {
+					fmt.Println("Error occored and cannot process anymore entry", err.Error())
+					panic(err)
+				}
+			}
+
+			messageJSON, err := json.Marshal(createMessage(index, row))
+
+			if err != nil {
+				log.Error(err, log.Data{
+					"details": "Could not create the json representation of message",
+					"message": messageJSON,
+				})
+				panic(err)
+			}
+
+			strTime := strconv.Itoa(int(time.Now().Unix()))
+			producerMsg := &sarama.ProducerMessage{
+				Topic: config.TopicName,
+				Key:   sarama.StringEncoder(strTime),
+				Value: sarama.ByteEncoder(messageJSON),
+			}
+
+			select {
+			case Producer.Input() <- producerMsg:
+				index++
+			case err := <-Producer.Errors():
+				errorCount++
+				log.Error(err, nil)
+			}
+		}
+
+		log.Debug("Kafka Loop details", log.Data{
+			"Enqueued": index,
+			"Errors":   errorCount,
+		})
+
+}
+
+
+

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"bytes"
-	"encoding/csv"
 	"errors"
 	. "github.com/smartystreets/goconvey/convey"
 	"io"
@@ -26,11 +25,11 @@ type MockAWSCli struct {
 
 func newMockAwsClient() *MockAWSCli {
 	mock := &MockAWSCli{requestedFiles: make(map[string]int)}
-	SetAWSClient(mock)
+	setAWSClient(mock)
 	return mock
 }
 
-func (mock *MockAWSCli) GetFile(fileURI string) (io.Reader, error) {
+func (mock *MockAWSCli) GetCSV(fileURI string) (io.Reader, error) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -57,12 +56,12 @@ type MockCSVProcessor struct {
 
 func newMockCSVProcessor() *MockCSVProcessor {
 	mock := &MockCSVProcessor{invocations: 0}
-	SetCSVProcessor(mock)
+	setCSVProcessor(mock)
 	return mock
 }
 
 // Process mock implementation of the Process function.
-func (p *MockCSVProcessor) Process(csvReader *csv.Reader) {
+func (p *MockCSVProcessor) Process(r io.Reader) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	p.invocations++
@@ -77,29 +76,31 @@ func mockReader(r io.Reader) ([]byte, error) {
 }
 
 func TestHandler(t *testing.T) {
-	Convey("Should return error response if no uri parameter is provided.", t, func() {
+	Convey("Should return error response if no filePath parameter is provided.", t, func() {
 		recorder := httptest.NewRecorder()
-		mockAWSCli, mockCSVProcessor := setMocks(mockReader)
+		mockAWSCli, mockCSVProcessor := setMocks(ioutil.ReadAll)
 
 		Handle(recorder, createRequest(nil))
 
-		actual := extractResponseBody(recorder)
+		splitterResponse, status := extractResponseBody(recorder)
 
-		So(*actual, ShouldResemble, SplitterErrorResponse(ReadRequestBodyErrMsg, 400))
+		So(splitterResponse, ShouldResemble, splitterRespFilePathMissing)
+		So(status, ShouldResemble, http.StatusBadRequest)
 		So(0, ShouldEqual, mockAWSCli.getTotalInvocations())
 		So(0, ShouldEqual, mockCSVProcessor.invocations)
 	})
 
-	Convey("Should invoke AWSClient once with the request file URI.", t, func() {
+	Convey("Should invoke AWSClient once with the request file path.", t, func() {
 		recorder := httptest.NewRecorder()
 		mockAWSCli, mockCSVProcessor := setMocks(ioutil.ReadAll)
 
-		fileLocation := "/aws"
+		fileLocation := "/test.csv"
 		Handle(recorder, createRequest(SplitterRequest{fileLocation}))
 
-		actual := extractResponseBody(recorder)
+		splitterResponse, status := extractResponseBody(recorder)
 
-		So(*actual, ShouldResemble, SplitterSuccessResponse(SuccessMsg, 200))
+		So(splitterResponse, ShouldResemble, splitterResponseSuccess)
+		So(status, ShouldResemble, http.StatusOK)
 		So(1, ShouldEqual, mockAWSCli.getTotalInvocations())
 		So(1, ShouldEqual, mockAWSCli.getInvocationsByURI(fileLocation))
 		So(1, ShouldEqual, mockCSVProcessor.invocations)
@@ -111,14 +112,15 @@ func TestHandler(t *testing.T) {
 
 		Handle(recorder, createRequest("This is not a SplitterRequest"))
 
-		actual := extractResponseBody(recorder)
+		splitterResponse, status := extractResponseBody(recorder)
 
 		So(0, ShouldEqual, mockAWSCli.getTotalInvocations())
 		So(0, ShouldEqual, mockCSVProcessor.invocations)
-		So(*actual, ShouldResemble, SplitterErrorResponse(UnmarshalBodyErrMsg, 400))
+		So(splitterResponse, ShouldResemble, splitterRespUnmarshalBody)
+		So(status, ShouldResemble, http.StatusBadRequest)
 	})
 
-	Convey("Should return appropriate error if request body has empty of missing uri field.", t, func() {
+	Convey("Should return appropriate error if request body has empty of missing filePath field.", t, func() {
 		recorder := httptest.NewRecorder()
 		request := createRequest(SplitterRequest{})
 
@@ -126,11 +128,12 @@ func TestHandler(t *testing.T) {
 
 		Handle(recorder, request)
 
-		actual := extractResponseBody(recorder)
+		splitterResponse, status := extractResponseBody(recorder)
 
 		So(0, ShouldEqual, mockAWSCli.getTotalInvocations())
 		So(0, ShouldEqual, mockCSVProcessor.invocations)
-		So(*actual, ShouldResemble, SplitterErrorResponse(URIParamMissingMsg, 400))
+		So(splitterResponse, ShouldResemble, splitterRespFilePathMissing)
+		So(status, ShouldResemble, http.StatusBadRequest)
 	})
 
 	Convey("Should return appropriate error if the awsClient returns an error.", t, func() {
@@ -141,13 +144,14 @@ func TestHandler(t *testing.T) {
 		mockAWSCli, mockCSVProcessor := setMocks(ioutil.ReadAll)
 		mockAWSCli.err = errors.New(awsErrMsg)
 
-		Handle(recorder, createRequest(SplitterRequest{URI: uri}))
-		actual := extractResponseBody(recorder)
+		Handle(recorder, createRequest(SplitterRequest{FilePath: uri}))
+		splitterResponse, status := extractResponseBody(recorder)
 
 		So(1, ShouldEqual, mockAWSCli.getTotalInvocations())
 		So(1, ShouldEqual, mockAWSCli.getInvocationsByURI(uri))
 		So(0, ShouldEqual, mockCSVProcessor.invocations)
-		So(*actual, ShouldResemble, SplitterErrorResponse(awsErrMsg, 400))
+		So(splitterResponse, ShouldResemble, SplitterResponse{awsErrMsg})
+		So(status, ShouldResemble, http.StatusBadRequest)
 	})
 
 	Convey("Should return success response for happy path scenario", t, func() {
@@ -156,31 +160,47 @@ func TestHandler(t *testing.T) {
 
 		mockAWSCli, mockCSVProcessor := setMocks(ioutil.ReadAll)
 
-		Handle(recorder, createRequest(SplitterRequest{URI: uri}))
-		actual := extractResponseBody(recorder)
+		Handle(recorder, createRequest(SplitterRequest{FilePath: uri}))
+		splitterResponse, statusCode := extractResponseBody(recorder)
 
 		So(1, ShouldEqual, mockAWSCli.getTotalInvocations())
 		So(1, ShouldEqual, mockAWSCli.getInvocationsByURI(uri))
 		So(1, ShouldEqual, mockCSVProcessor.invocations)
-		So(*actual, ShouldResemble, SplitterSuccessResponse(SuccessMsg, 200))
+		So(splitterResponse, ShouldResemble, splitterResponseSuccess)
+		So(statusCode, ShouldResemble, http.StatusOK)
+	})
+
+	Convey("Should return appropriate error for unsupported file types", t, func() {
+		recorder := httptest.NewRecorder()
+		uri := "/unsupported.txt"
+
+		mockAWSCli, mockCSVProcessor := setMocks(ioutil.ReadAll)
+
+		Handle(recorder, createRequest(SplitterRequest{FilePath: uri}))
+
+		splitterResponse, status := extractResponseBody(recorder)
+		So(0, ShouldEqual, mockAWSCli.getTotalInvocations())
+		So(0, ShouldEqual, mockCSVProcessor.invocations)
+		So(splitterResponse, ShouldResemble, splitterRespUnsupportedFileType)
+		So(status, ShouldResemble, http.StatusBadRequest)
 	})
 }
 
-func extractResponseBody(rec *httptest.ResponseRecorder) *SplitterResponse {
+func extractResponseBody(rec *httptest.ResponseRecorder) (SplitterResponse, int) {
 	var actual = &SplitterResponse{}
 	json.Unmarshal([]byte(rec.Body.String()), actual)
-	return actual
+	return *actual, rec.Code
 }
 
 func createRequest(body interface{}) *http.Request {
 	b, _ := json.Marshal(body)
-	request, _ := http.NewRequest("POST", SplitterURI, bytes.NewBuffer(b))
+	request, _ := http.NewRequest("POST", "/splitter", bytes.NewBuffer(b))
 	return request
 }
 
-func setMocks(reader ByteSliceReader) (*MockAWSCli, *MockCSVProcessor) {
+func setMocks(reader requestBodyReader) (*MockAWSCli, *MockCSVProcessor) {
 	mockAWSCli := newMockAwsClient()
 	mockCSVProcessor := newMockCSVProcessor()
-	SetReader(reader)
+	setReader(reader)
 	return mockAWSCli, mockCSVProcessor
 }
