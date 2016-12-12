@@ -45,15 +45,12 @@ func (p *Processor) Process(r io.Reader) {
 	var batchNumber = 1
 	var isFinalBatch = false
 
-batchLoop:
-	for { // each batch
+	for !isFinalBatch { // each batch
 
 		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
 		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
-	createBatchLoop:
-		for batchIndex := 0; batchIndex < batchSize; batchIndex++ { // each row in the batch
-
+		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ { // each row in the batch
 			row, err := csvR.Read()
 			if err != nil {
 				if err == io.EOF {
@@ -61,16 +58,15 @@ batchLoop:
 					isFinalBatch = true
 					msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
 					log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
-					break createBatchLoop
 				} else {
 					fmt.Println("Error occored and cannot process anymore entry", err.Error())
 					panic(err)
 				}
+			} else {
+				producerMsg := createMessageFromRow(row, index)
+				msgs[batchIndex] = producerMsg
+				index++
 			}
-
-			producerMsg := createMessageFromRow(row, index)
-			msgs[batchIndex] = producerMsg
-			index++
 		}
 
 		err := Producer.SendMessages(msgs)
@@ -78,10 +74,6 @@ batchLoop:
 			log.Error(err, log.Data{
 				"details": "Failed to add messages to Kafka",
 			})
-		}
-
-		if isFinalBatch {
-			break batchLoop
 		}
 
 		batchNumber++
