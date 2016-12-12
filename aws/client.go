@@ -42,7 +42,7 @@ func (cli *Service) GetCSV(filePath string) (io.Reader, error) {
 
 	log.Debug("Requesting .csv file from AWS S3 bucket", log.Data{
 		"S3BucketName": config.S3Bucket,
-		"filePath": filePath,
+		"filePath":     filePath,
 	})
 	result, err := s3Service.GetObject(request)
 

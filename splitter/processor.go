@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var Producer sarama.AsyncProducer
+var Producer sarama.SyncProducer
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
@@ -37,52 +37,74 @@ type Message struct {
 func (p *Processor) Process(r io.Reader, filename string, startTime time.Time, datasetID string) {
 
 	scanner := bufio.NewScanner(r)
-	var rowIndex = 0
-	var errorCount = 0
+	var index = 0
+	var batchSize = config.BatchSize
+	var batchNumber = 1
+	var isFinalBatch = false
 
-csvLoop:
-	for {
-		scanSuccessful := scanner.Scan()
-		if !scanSuccessful {
-			log.Debug("EOF reached, no more records to process", nil)
-			break csvLoop
+	for !isFinalBatch {
+		// each batch
+
+		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
+		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
+
+		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ {
+			// each row in the batch
+			scanSuccessful := scanner.Scan()
+			if !scanSuccessful {
+				log.Debug("EOF reached, no more records to process", nil)
+				isFinalBatch = true
+				msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
+				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
+
+			} else {
+				producerMsg := createMessage(scanner.Text(), index, filename, startTime, datasetID)
+				msgs[batchIndex] = producerMsg
+				index++
+			}
 		}
 
-		message := Message{
-			Index:     rowIndex,
-			Row:       scanner.Text(),
-			Filename:  filename,
-			StartTime: startTime.UTC().Unix(),
-			DatasetID: datasetID,
-		}
-
-		messageJSON, err := json.Marshal(message)
+		err := Producer.SendMessages(msgs)
 		if err != nil {
 			log.Error(err, log.Data{
-				"details": "Could not create the json representation of message",
-				"message": messageJSON,
+				"details": "Failed to add messages to Kafka",
 			})
-			panic(err)
 		}
 
-		strTime := strconv.Itoa(int(time.Now().Unix()))
-		producerMsg := &sarama.ProducerMessage{
-			Topic: config.TopicName,
-			Key:   sarama.StringEncoder(strTime),
-			Value: sarama.ByteEncoder(messageJSON),
-		}
-
-		select {
-		case Producer.Input() <- producerMsg:
-			rowIndex++
-		case err := <-Producer.Errors():
-			errorCount++
-			log.Error(err, nil)
-		}
+		batchNumber++
 	}
 
 	log.Debug("Kafka Loop details", log.Data{
-		"Enqueued": rowIndex,
-		"Errors":   errorCount,
+		"Enqueued": index,
 	})
+}
+
+func createMessage(row string, index int, filename string, startTime time.Time, datasetID string) *sarama.ProducerMessage {
+
+	message := Message{
+		Index:     index,
+		Row:       row,
+		Filename:  filename,
+		StartTime: startTime.UTC().Unix(),
+		DatasetID: datasetID,
+	}
+
+	messageJSON, err := json.Marshal(message)
+
+	if err != nil {
+		log.Error(err, log.Data{
+			"details": "Could not create the json representation of message",
+			"message": messageJSON,
+		})
+		panic(err)
+	}
+
+	strTime := strconv.Itoa(int(time.Now().Unix()))
+	producerMsg := &sarama.ProducerMessage{
+		Topic: config.TopicName,
+		Key:   sarama.StringEncoder(strTime),
+		Value: sarama.ByteEncoder(messageJSON),
+	}
+
+	return producerMsg
 }

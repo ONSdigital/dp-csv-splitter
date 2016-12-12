@@ -7,7 +7,6 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
 	. "github.com/smartystreets/goconvey/convey"
-	"log"
 	"strings"
 	"testing"
 	"time"
@@ -27,9 +26,9 @@ func TestProcessor(t *testing.T) {
 	datasetID := "werqae-asdqwrwf-erwe"
 
 	Convey("Given a mock producer with a single expected intput that succeeds", t, func() {
-		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
 
-		mockProducer.ExpectInputWithCheckerFunctionAndSucceed(func(val []byte) error {
+		mockProducer := mocks.NewSyncProducer(t, kafkaConfig)
+		mockProducer.ExpectSendMessageWithCheckerFunctionAndSucceed(func(val []byte) error {
 
 			var message *splitter.Message
 			json.Unmarshal(val, &message)
@@ -62,16 +61,14 @@ func TestProcessor(t *testing.T) {
 
 			Convey("When the processor is called", func() {
 				Processor.Process(reader, filename, startTime, datasetID)
-				message := <-mockProducer.Successes()
-				So("test", ShouldEqual, message.Topic)
-				So(1, ShouldEqual, message.Offset)
+
 			})
 		})
 	})
 
 	Convey("Given a mock producer with a single expected intput that fails", t, func() {
-		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
-		mockProducer.ExpectInputAndFail(errors.New(""))
+		mockProducer := mocks.NewSyncProducer(t, kafkaConfig)
+		mockProducer.ExpectSendMessageAndFail(errors.New(""))
 		splitter.Producer = mockProducer
 
 		var Processor = splitter.NewCSVProcessor()
@@ -81,10 +78,7 @@ func TestProcessor(t *testing.T) {
 
 			Convey("When the processor is called", func() {
 				Processor.Process(reader, filename, startTime, datasetID)
-				err := <-mockProducer.Errors()
-				log.Print(err)
 			})
 		})
 	})
-
 }
