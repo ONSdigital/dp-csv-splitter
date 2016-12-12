@@ -22,18 +22,20 @@ func main() {
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.Retry.Max = 5
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
+	kafkaConfig.Producer.Return.Successes = true
+	kafkaConfig.Producer.Return.Errors = true
 
-	asyncProducer, err := sarama.NewAsyncProducer([]string{config.KafkaAddr}, kafkaConfig)
+	producer, err := sarama.NewSyncProducer([]string{config.KafkaAddr}, kafkaConfig)
 	if err != nil {
 		log.Error(err, log.Data{"message": "Failed to create message producer."})
 	}
 
-	splitter.Producer = asyncProducer
+	splitter.Producer = producer
 
 	go func() {
 		<-signals
 
-		if err := asyncProducer.Close(); err != nil {
+		if err := producer.Close(); err != nil {
 			log.Debug("Failed to shutdown AsyncProducer gracefully.", nil)
 			log.Error(err, nil)
 			os.Exit(1)

@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/ONSdigital/go-ns/log"
 	"os"
+	"strconv"
 )
 
 const bindAddrKey = "BIND_ADDR"
@@ -10,6 +11,7 @@ const kafkaAddrKey = "KAFKA_ADDR"
 const s3BucketKey = "S3_BUCKET"
 const awsRegionKey = "AWS_REGION"
 const topicNameKey = "TOPIC_NAME"
+const batchSizeKey = "BATCH_SIZE"
 
 // BindAddr the address to bind to.
 var BindAddr = ":21000"
@@ -25,6 +27,9 @@ var AWSRegion = "eu-west-1"
 
 // TopicName the name of the Kafka topic to send messages to.
 var TopicName = "test"
+
+// BatchSize the number of CSV lines to process in a single batch.
+var BatchSize int = 100
 
 func init() {
 	if bindAddrEnv := os.Getenv(bindAddrKey); len(bindAddrEnv) > 0 {
@@ -47,7 +52,12 @@ func init() {
 		TopicName = topicNameEnv
 	}
 
-
+	batchSizeEnv, err := strconv.Atoi(os.Getenv(batchSizeKey));
+	if err != nil {
+		log.Error(err, log.Data{"message":"Failed to parse batch size. Using default." })
+	} else {
+		BatchSize = batchSizeEnv
+	}
 }
 
 func Load() {
@@ -58,5 +68,6 @@ func Load() {
 		s3BucketKey:  S3Bucket,
 		awsRegionKey: AWSRegion,
 		topicNameKey: TopicName,
+		batchSizeKey: BatchSize,
 	})
 }

@@ -1,14 +1,13 @@
 package splitter_test
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/Shopify/sarama/mocks"
-	"github.com/Shopify/sarama"
-	"github.com/ONSdigital/dp-csv-splitter/splitter"
-	"strings"
 	"errors"
-	"log"
+	"github.com/ONSdigital/dp-csv-splitter/splitter"
+	"github.com/Shopify/sarama"
+	"github.com/Shopify/sarama/mocks"
+	. "github.com/smartystreets/goconvey/convey"
+	"strings"
+	"testing"
 )
 
 var exampleCsvLine string = "36929,,,,,,,,,,,,,,,,,2014,2014,,Year,,,,,,,,,,,,,,,NACE,NACE,,08,08 - Other mining and quarrying,,,,Prodcom Elements,Prodcom Elements,,UK manufacturer sales ID,UK manufacturer sales LABEL,,\n\n"
@@ -21,8 +20,8 @@ func TestProcessor(t *testing.T) {
 	kafkaConfig.Producer.Return.Successes = true
 
 	Convey("Given a mock producer with a single expected intput that succeeds", t, func() {
-		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
-		mockProducer.ExpectInputAndSucceed();
+		mockProducer := mocks.NewSyncProducer(t, kafkaConfig)
+		mockProducer.ExpectSendMessageAndSucceed()
 		splitter.Producer = mockProducer
 
 		var Processor = splitter.NewCSVProcessor()
@@ -32,16 +31,13 @@ func TestProcessor(t *testing.T) {
 
 			Convey("When the processor is called", func() {
 				Processor.Process(reader)
-				message := <-mockProducer.Successes()
-				So("test", ShouldEqual, message.Topic)
-				So(1, ShouldEqual, message.Offset)
 			})
 		})
 	})
 
 	Convey("Given a mock producer with a single expected intput that fails", t, func() {
-		mockProducer := mocks.NewAsyncProducer(t, kafkaConfig)
-		mockProducer.ExpectInputAndFail(errors.New(""));
+		mockProducer := mocks.NewSyncProducer(t, kafkaConfig)
+		mockProducer.ExpectSendMessageAndFail(errors.New(""))
 		splitter.Producer = mockProducer
 
 		var Processor = splitter.NewCSVProcessor()
@@ -51,8 +47,6 @@ func TestProcessor(t *testing.T) {
 
 			Convey("When the processor is called", func() {
 				Processor.Process(reader)
-				err := <-mockProducer.Errors()
-				log.Print(err)
 			})
 		})
 	})
