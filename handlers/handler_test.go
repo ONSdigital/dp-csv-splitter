@@ -12,6 +12,7 @@ import (
 	"io"
 	"io/ioutil"
 	"sync"
+	"time"
 )
 
 var mutex = &sync.Mutex{}
@@ -42,7 +43,7 @@ func newMockCSVProcessor() *MockCSVProcessor {
 }
 
 // Process mock implementation of the Process function.
-func (p *MockCSVProcessor) Process(r io.Reader) {
+func (p *MockCSVProcessor) Process(r io.Reader, filename string, startTime time.Time, datasetId string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	p.invocations++
