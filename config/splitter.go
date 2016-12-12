@@ -28,6 +28,7 @@ var AWSRegion = "eu-west-1"
 // TopicName the name of the Kafka topic to send messages to.
 var TopicName = "test"
 
+// BatchSize the number of CSV lines to process in a single batch.
 var BatchSize int = 100
 
 func init() {
@@ -51,11 +52,11 @@ func init() {
 		TopicName = topicNameEnv
 	}
 
-	batchSizeEnv, err := strconv.ParseInt(os.Getenv(batchSizeKey), 10, 16);
+	batchSizeEnv, err := strconv.Atoi(os.Getenv(batchSizeKey));
 	if err != nil {
 		log.Error(err, log.Data{"message":"Failed to parse batch size. Using default." })
 	} else {
-		BatchSize = int(batchSizeEnv)
+		BatchSize = batchSizeEnv
 	}
 }
 
