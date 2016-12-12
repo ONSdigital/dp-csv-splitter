@@ -3,12 +3,12 @@ package main
 import (
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/handlers"
+	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/ONSdigital/go-ns/log"
+	"github.com/Shopify/sarama"
 	"github.com/gorilla/pat"
 	"net/http"
 	"os"
-	"github.com/ONSdigital/dp-csv-splitter/splitter"
-	"github.com/Shopify/sarama"
 	"os/signal"
 )
 

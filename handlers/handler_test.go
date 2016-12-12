@@ -12,6 +12,7 @@ import (
 	"io"
 	"io/ioutil"
 	"sync"
+	"time"
 )
 
 var mutex = &sync.Mutex{}
@@ -61,7 +62,7 @@ func newMockCSVProcessor() *MockCSVProcessor {
 }
 
 // Process mock implementation of the Process function.
-func (p *MockCSVProcessor) Process(r io.Reader) {
+func (p *MockCSVProcessor) Process(r io.Reader, filename string, startTime time.Time, datasetId string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	p.invocations++
@@ -69,10 +70,6 @@ func (p *MockCSVProcessor) Process(r io.Reader) {
 
 func (mock *MockAWSCli) getInvocationsByURI(uri string) int {
 	return mock.requestedFiles[uri]
-}
-
-func mockReader(r io.Reader) ([]byte, error) {
-	return []byte{}, errors.New("BOB")
 }
 
 func TestHandler(t *testing.T) {

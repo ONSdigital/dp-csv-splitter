@@ -52,9 +52,9 @@ func init() {
 		TopicName = topicNameEnv
 	}
 
-	batchSizeEnv, err := strconv.Atoi(os.Getenv(batchSizeKey));
+	batchSizeEnv, err := strconv.Atoi(os.Getenv(batchSizeKey))
 	if err != nil {
-		log.Error(err, log.Data{"message":"Failed to parse batch size. Using default." })
+		log.Error(err, log.Data{"message": "Failed to parse batch size. Using default."})
 	} else {
 		BatchSize = batchSizeEnv
 	}

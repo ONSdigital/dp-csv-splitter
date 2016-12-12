@@ -1,15 +1,13 @@
 package splitter
 
 import (
-	"encoding/csv"
+	"bufio"
 	"encoding/json"
-	"fmt"
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/Shopify/sarama"
 	"io"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -17,7 +15,7 @@ var Producer sarama.SyncProducer
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
-	Process(r io.Reader)
+	Process(r io.Reader, filename string, startTime time.Time, datasetID string)
 }
 
 // Processor implementation of the CSVProcessor interface.
@@ -29,41 +27,38 @@ func NewCSVProcessor() *Processor {
 }
 
 type Message struct {
-	Index int    `json:"index"`
-	Row   string `json:"datapoint"`
+	Index     int    `json:"index"`
+	Row       string `json:"row"`
+	Filename  string `json:"filename"`
+	StartTime int64  `json:"startTime"`
+	DatasetID string `json:"datasetID"`
 }
 
-func createMessage(index int, row []string) Message {
-	return Message{Index: index, Row: strings.Join(row[:], ",")}
-}
+func (p *Processor) Process(r io.Reader, filename string, startTime time.Time, datasetID string) {
 
-func (p *Processor) Process(r io.Reader) {
-
-	csvR := csv.NewReader(r)
+	scanner := bufio.NewScanner(r)
 	var index = 0
 	var batchSize = config.BatchSize
 	var batchNumber = 1
 	var isFinalBatch = false
 
-	for !isFinalBatch { // each batch
+	for !isFinalBatch {
+		// each batch
 
 		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
 		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
-		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ { // each row in the batch
-			row, err := csvR.Read()
-			if err != nil {
-				if err == io.EOF {
-					log.Debug("EOF reached, no more records to process", nil)
-					isFinalBatch = true
-					msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
-					log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
-				} else {
-					fmt.Println("Error occored and cannot process anymore entry", err.Error())
-					panic(err)
-				}
+		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ {
+			// each row in the batch
+			scanSuccessful := scanner.Scan()
+			if !scanSuccessful {
+				log.Debug("EOF reached, no more records to process", nil)
+				isFinalBatch = true
+				msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
+				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
+
 			} else {
-				producerMsg := createMessageFromRow(row, index)
+				producerMsg := createMessage(scanner.Text(), index, filename, startTime, datasetID)
 				msgs[batchIndex] = producerMsg
 				index++
 			}
@@ -83,8 +78,18 @@ func (p *Processor) Process(r io.Reader) {
 		"Enqueued": index,
 	})
 }
-func createMessageFromRow(row []string, index int) *sarama.ProducerMessage {
-	messageJSON, err := json.Marshal(createMessage(index, row))
+
+func createMessage(row string, index int, filename string, startTime time.Time, datasetID string) *sarama.ProducerMessage {
+
+	message := Message{
+		Index:     index,
+		Row:       row,
+		Filename:  filename,
+		StartTime: startTime.UTC().Unix(),
+		DatasetID: datasetID,
+	}
+
+	messageJSON, err := json.Marshal(message)
 
 	if err != nil {
 		log.Error(err, log.Data{

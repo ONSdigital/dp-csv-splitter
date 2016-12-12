@@ -2,14 +2,16 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
+	"github.com/ONSdigital/go-ns/log"
+	"github.com/satori/go.uuid"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"errors"
-	"github.com/ONSdigital/go-ns/log"
+	"time"
 )
 
 const csvFileExt = ".csv"
@@ -75,7 +77,9 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		WriteResponse(w, SplitterResponse{err.Error()}, http.StatusBadRequest)
 		return
 	}
-	csvProcessor.Process(awsReader)
+
+	datasetId := uuid.NewV4().String()
+	csvProcessor.Process(awsReader, splitterReq.FilePath, time.Now(), datasetId)
 	WriteResponse(w, splitterResponseSuccess, http.StatusOK)
 }
 

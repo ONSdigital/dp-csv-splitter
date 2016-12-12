@@ -269,6 +269,12 @@
 			"revisionTime": "2016-11-28T21:05:44Z"
 		},
 		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "b061729afc07e77a8aa4fad0a2fd840958f1942a",
+			"revisionTime": "2016-09-27T10:08:44Z"
+		},
+		{
 			"checksumSHA1": "8sTogvgjVmUeLd4vWfcARLDBksg=",
 			"path": "github.com/smartystreets/assertions",
 			"revision": "e60cfa771e3f4d18723a4119f1833898c9c62066",
