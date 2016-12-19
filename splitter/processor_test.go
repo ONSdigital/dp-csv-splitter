@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+var exampleHeaderLine string = "Observation,Data_Marking,Statistical_Unit_Eng,Statistical_Unit_Cym,Measure_Type_Eng,Measure_Type_Cym,Observation_Type,Empty,Obs_Type_Value,Unit_Multiplier,Unit_Of_Measure_Eng,Unit_Of_Measure_Cym,Confidentuality,Empty1,Geographic_Area,Empty2,Empty3,Time_Dim_Item_ID,Time_Dim_Item_Label_Eng,Time_Dim_Item_Label_Cym,Time_Type,Empty4,Statistical_Population_ID,Statistical_Population_Label_Eng,Statistical_Population_Label_Cym,CDID,CDIDDescrip,Empty5,Empty6,Empty7,Empty8,Empty9,Empty10,Empty11,Empty12,Dim_ID_1,dimension_Label_Eng_1,dimension_Label_Cym_1,Dim_Item_ID_1,dimension_Item_Label_Eng_1,dimension_Item_Label_Cym_1,Is_Total_1,Is_Sub_Total_1,Dim_ID_2,dimension_Label_Eng_2,dimension_Label_Cym_2,Dim_Item_ID_2,dimension_Item_Label_Eng_2,dimension_Item_Label_Cym_2,Is_Total_2,Is_Sub_Total_2\n"
 var exampleCsvLine string = "153223,,Person,,Count,,,,,,,,,,K04000001,,,,,,,,,,,,,,,,,,,,,Sex,Sex,,All categories: Sex,All categories: Sex,,,,Age,Age,,All categories: Age 16 and over,All categories: Age 16 and over,,,,Residence Type,Residence Type,,All categories: Residence Type,All categories: Residence Type,,,"
 
 func TestProcessor(t *testing.T) {
@@ -57,7 +58,7 @@ func TestProcessor(t *testing.T) {
 		var Processor = splitter.NewCSVProcessor()
 
 		Convey("Given a reader with a single CSV line", func() {
-			reader := strings.NewReader(exampleCsvLine)
+			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
 			Convey("When the processor is called", func() {
 				Processor.Process(reader, filename, startTime, datasetID)
@@ -74,7 +75,7 @@ func TestProcessor(t *testing.T) {
 		var Processor = splitter.NewCSVProcessor()
 
 		Convey("Given a reader with a single CSV line", func() {
-			reader := strings.NewReader(exampleCsvLine)
+			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
 			Convey("When the processor is called", func() {
 				Processor.Process(reader, filename, startTime, datasetID)
