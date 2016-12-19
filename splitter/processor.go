@@ -42,6 +42,12 @@ func (p *Processor) Process(r io.Reader, filename string, startTime time.Time, d
 	var batchNumber = 1
 	var isFinalBatch = false
 
+	// Scan and discard header row (for now) - the data rows contain sufficient information about the structure
+	if !scanner.Scan() && scanner.Err() == io.EOF {
+		log.Debug("Encountered EOF immediately when processing header row", nil)
+		return
+	}
+
 	for !isFinalBatch {
 		// each batch
 
