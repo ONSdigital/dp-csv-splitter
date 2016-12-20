@@ -1,17 +1,18 @@
 package main
 
 import (
+	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/handlers"
+	"github.com/ONSdigital/dp-csv-splitter/message"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/Shopify/sarama"
+	"github.com/bsm/sarama-cluster"
 	"github.com/gorilla/pat"
 	"net/http"
 	"os"
 	"os/signal"
-	"github.com/bsm/sarama-cluster"
-	"encoding/json"
 )
 
 func main() {
@@ -31,8 +32,13 @@ func main() {
 	if err != nil {
 		log.Error(err, log.Data{"message": "Failed to create message producer."})
 	}
-
 	splitter.Producer = producer
+
+	awsService := aws.NewService()
+	handlers.SetAWSService(awsService)
+
+	csvProcessor := splitter.NewCSVProcessor()
+	handlers.SetCSVProcessor(csvProcessor)
 
 	go func() {
 		<-signals
@@ -58,27 +64,7 @@ func main() {
 
 	consumerConfig := cluster.NewConfig()
 	consumer, err := cluster.NewConsumer([]string{config.KafkaAddr}, config.KafkaConsumerGroup, []string{config.KafkaConsumerTopic}, consumerConfig)
-
-	go func() {
-		for err := range consumer.Errors() {
-			log.Error(err, nil)
-		}
-	}()
-
-	for message := range consumer.Messages() {
-
-		log.Debug("Message received from Kafka!", nil)
-
-		var fileUploadedEvent FileUploaded
-		if err := json.Unmarshal(message.Value, &fileUploadedEvent); err != nil {
-			log.Error(err, nil)
-			continue // replace with return
-		}
-
-		log.Debug("Message filename:" + fileUploadedEvent.Filename, nil)
-
-		handlers.ProcessCsv(fileUploadedEvent.Filename)
-	}
+	message.ConsumerLoop(consumer, awsService, csvProcessor)
 }
 
 // FileUploaded event

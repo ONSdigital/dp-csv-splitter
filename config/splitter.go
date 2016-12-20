@@ -79,13 +79,13 @@ func init() {
 func Load() {
 	// Will call init().
 	log.Debug("dp-csv-splitter Configuration", log.Data{
-		bindAddrKey:  BindAddr,
-		kafkaAddrKey: KafkaAddr,
+		bindAddrKey:        BindAddr,
+		kafkaAddrKey:       KafkaAddr,
 		kafkaConsumerGroup: KafkaConsumerGroup,
 		kafkaConsumerTopic: KafkaConsumerTopic,
-		s3BucketKey:  S3Bucket,
-		awsRegionKey: AWSRegion,
-		topicNameKey: TopicName,
-		batchSizeKey: BatchSize,
+		s3BucketKey:        S3Bucket,
+		awsRegionKey:       AWSRegion,
+		topicNameKey:       TopicName,
+		batchSizeKey:       BatchSize,
 	})
 }

@@ -38,7 +38,7 @@ type MockCSVProcessor struct {
 
 func newMockCSVProcessor() *MockCSVProcessor {
 	mock := &MockCSVProcessor{invocations: 0}
-	setCSVProcessor(mock)
+	SetCSVProcessor(mock)
 	return mock
 }
 
@@ -247,7 +247,7 @@ func createRequest(body interface{}) *http.Request {
 
 func setMocks(reader requestBodyReader) (*MockAWSCli, *MockCSVProcessor) {
 	mockAWSCli := &MockAWSCli{invocationParameters: make([]string, 0)}
-	setAWSService(mockAWSCli)
+	SetAWSService(mockAWSCli)
 
 	mockCSVProcessor := newMockCSVProcessor()
 	setReader(reader)

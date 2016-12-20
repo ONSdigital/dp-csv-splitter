@@ -32,8 +32,8 @@ type SplitterRequest struct {
 var unsupoprtedFileTypeErr = errors.New("Unspported file type.")
 var awsServiceErr = errors.New("Error while attempting get to get from from AWS s3 bucket.")
 var filePathParamMissingErr = errors.New("No filePath value was provided.")
-var awsService = aws.NewService()
-var csvProcessor splitter.CSVProcessor = splitter.NewCSVProcessor()
+var awsService aws.AWSService
+var csvProcessor splitter.CSVProcessor
 var readSplitterRequestBody requestBodyReader = ioutil.ReadAll
 
 // Responses
@@ -73,7 +73,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := ProcessCsv(splitterReq.FilePath); err != nil {
+	if err := processCsv(splitterReq.FilePath); err != nil {
 		log.Error(awsServiceErr, log.Data{"details": err.Error()})
 		response.WriteJSON(w, SplitterResponse{err.Error()}, http.StatusBadRequest)
 		return
@@ -82,7 +82,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	response.WriteJSON(w, splitterResponseSuccess, http.StatusOK)
 }
 
-func ProcessCsv(filePath string) error {
+func processCsv(filePath string) error {
 	awsReader, err := awsService.GetCSV(filePath)
 	if err != nil {
 		log.Error(awsServiceErr, log.Data{"details": err.Error()})
@@ -98,10 +98,10 @@ func setReader(reader requestBodyReader) {
 	readSplitterRequestBody = reader
 }
 
-func setCSVProcessor(p splitter.CSVProcessor) {
+func SetCSVProcessor(p splitter.CSVProcessor) {
 	csvProcessor = p
 }
 
-func setAWSService(c aws.AWSService) {
+func SetAWSService(c aws.AWSService) {
 	awsService = c
 }
