@@ -57,6 +57,8 @@ The project includes a small data set in the `sample_csv` directory for test usa
 | -------------------- | ----------------------- | ----------------------------------------------------
 | BIND_ADDR            | ":21000"                | The host and port to bind to.
 | KAFKA_ADDR           | "http://localhost:9092" | The Kafka address to send messages to.
+| KAFKA_CONSUMER_GROUP | "file-uploaded"         | The Kafka consumer group to consume messages from.
+| KAFKA_CONSUMER_TOPIC | "file-uploaded"         | The Kafka topic to consume messages from.
 | S3_BUCKET            | "dp-csv-splitter-1"     | The name of AWS S3 bucket to get the csv files from.
 | AWS_REGION           | "eu-west-1"             | The AWS region to use.
 | TOPIC_NAME           | "test"                  | The name of the Kafka topic to send the messages to.
