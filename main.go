@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"github.com/bsm/sarama-cluster"
+	"encoding/json"
 )
 
 func main() {
@@ -47,8 +49,40 @@ func main() {
 	router := pat.New()
 	router.Post("/splitter", handlers.Handle)
 
-	if err := http.ListenAndServe(config.BindAddr, router); err != nil {
-		log.Error(err, nil)
-		os.Exit(1)
+	go func() {
+		if err := http.ListenAndServe(config.BindAddr, router); err != nil {
+			log.Error(err, nil)
+			os.Exit(1)
+		}
+	}()
+
+	consumerConfig := cluster.NewConfig()
+	consumer, err := cluster.NewConsumer([]string{config.KafkaAddr}, config.KafkaConsumerGroup, []string{config.KafkaConsumerTopic}, consumerConfig)
+
+	go func() {
+		for err := range consumer.Errors() {
+			log.Error(err, nil)
+		}
+	}()
+
+	for message := range consumer.Messages() {
+
+		log.Debug("Message received from Kafka!", nil)
+
+		var fileUploadedEvent FileUploaded
+		if err := json.Unmarshal(message.Value, &fileUploadedEvent); err != nil {
+			log.Error(err, nil)
+			continue // replace with return
+		}
+
+		log.Debug("Message filename:" + fileUploadedEvent.Filename, nil)
+
+		handlers.ProcessCsv(fileUploadedEvent.Filename)
 	}
+}
+
+// FileUploaded event
+type FileUploaded struct {
+	Filename string `json:"filename"`
+	Time     int64  `json:"time"`
 }

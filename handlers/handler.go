@@ -72,16 +72,26 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 		response.WriteJSON(w, splitterRespUnsupportedFileType, http.StatusBadRequest)
 		return
 	}
-	awsReader, err := awsService.GetCSV(splitterReq.FilePath)
-	if err != nil {
+
+	if err := ProcessCsv(splitterReq.FilePath); err != nil {
 		log.Error(awsServiceErr, log.Data{"details": err.Error()})
 		response.WriteJSON(w, SplitterResponse{err.Error()}, http.StatusBadRequest)
 		return
 	}
 
-	datasetId := uuid.NewV4().String()
-	csvProcessor.Process(awsReader, splitterReq.FilePath, time.Now(), datasetId)
 	response.WriteJSON(w, splitterResponseSuccess, http.StatusOK)
+}
+
+func ProcessCsv(filePath string) error {
+	awsReader, err := awsService.GetCSV(filePath)
+	if err != nil {
+		log.Error(awsServiceErr, log.Data{"details": err.Error()})
+		return err
+	}
+
+	datasetId := uuid.NewV4().String()
+	csvProcessor.Process(awsReader, filePath, time.Now(), datasetId)
+	return nil
 }
 
 func setReader(reader requestBodyReader) {
