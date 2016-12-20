@@ -8,6 +8,8 @@ import (
 
 const bindAddrKey = "BIND_ADDR"
 const kafkaAddrKey = "KAFKA_ADDR"
+const kafkaConsumerGroup = "KAFKA_CONSUMER_GROUP"
+const kafkaConsumerTopic = "KAFKA_CONSUMER_TOPIC"
 const s3BucketKey = "S3_BUCKET"
 const awsRegionKey = "AWS_REGION"
 const topicNameKey = "TOPIC_NAME"
@@ -19,8 +21,14 @@ var BindAddr = ":21000"
 // KafkaAddr the Kafka address to send messages to.
 var KafkaAddr = "localhost:9092"
 
+// KafkaConsumerGroup the consumer group to consume messages from.
+var KafkaConsumerGroup = "file-uploaded"
+
+// KafkaConsumerTopic the name of the topic to consume messages from.
+var KafkaConsumerTopic = "file-uploaded"
+
 // S3Bucket the name of the AWS s3 bucket to get the CSV files from.
-var S3Bucket = "dp-csv-splitter-1"
+var S3Bucket = "dp-csv-splitter"
 
 // AWSRegion the AWS region to use.
 var AWSRegion = "eu-west-1"
@@ -52,6 +60,14 @@ func init() {
 		TopicName = topicNameEnv
 	}
 
+	if consumerGroupEnv := os.Getenv(kafkaConsumerGroup); len(consumerGroupEnv) > 0 {
+		KafkaConsumerGroup = consumerGroupEnv
+	}
+
+	if consumerTopicEnv := os.Getenv(kafkaConsumerTopic); len(consumerTopicEnv) > 0 {
+		KafkaConsumerTopic = consumerTopicEnv
+	}
+
 	batchSizeEnv, err := strconv.Atoi(os.Getenv(batchSizeKey))
 	if err != nil {
 		log.Error(err, log.Data{"message": "Failed to parse batch size. Using default."})
@@ -65,6 +81,8 @@ func Load() {
 	log.Debug("dp-csv-splitter Configuration", log.Data{
 		bindAddrKey:  BindAddr,
 		kafkaAddrKey: KafkaAddr,
+		kafkaConsumerGroup: KafkaConsumerGroup,
+		kafkaConsumerTopic: KafkaConsumerTopic,
 		s3BucketKey:  S3Bucket,
 		awsRegionKey: AWSRegion,
 		topicNameKey: TopicName,
