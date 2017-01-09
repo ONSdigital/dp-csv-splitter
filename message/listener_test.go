@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ONSdigital/dp-csv-splitter/message"
+	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
 	. "github.com/smartystreets/goconvey/convey"
@@ -16,9 +17,9 @@ import (
 var messagesProcessed = 0
 
 func TestProcessor(t *testing.T) {
-	event := message.FileUploaded{
-		Filename: "expectedFilename",
-		Time:     time.Now().UTC().Unix(),
+	event := event.UploadEvent{
+		Time:  time.Now().UTC().Unix(),
+		S3URL: "s3://some-bucket/some-file.csv",
 	}
 
 	messageJson, _ := json.Marshal(event)
@@ -55,14 +56,14 @@ var exampleCsvLine string = "153223,,Person,,Count,,,,,,,,,,K04000001,,,,,,,,,,,
 
 type mockAwsService struct{}
 
-func (awsService *mockAwsService) GetCSV(filePath string) (io.Reader, error) {
+func (awsService *mockAwsService) GetCSV(uploadEvent event.UploadEvent) (io.Reader, error) {
 	reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 	return reader, nil
 }
 
 type mockProcessor struct{}
 
-func (processor *mockProcessor) Process(r io.Reader, filename string, startTime time.Time, datasetID string) {
+func (processor *mockProcessor) Process(r io.Reader, uploadEvent event.UploadEvent, startTime time.Time, datasetID string) {
 	messagesProcessed++
 	fmt.Println("Processor called!")
 }

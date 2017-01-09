@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/config"
-	"github.com/ONSdigital/dp-csv-splitter/handlers"
+	//"github.com/ONSdigital/dp-csv-splitter/handlers"
 	"github.com/ONSdigital/dp-csv-splitter/message"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/ONSdigital/go-ns/log"
@@ -32,13 +32,10 @@ func main() {
 	if err != nil {
 		log.Error(err, log.Data{"message": "Failed to create message producer."})
 	}
+
 	splitter.Producer = producer
-
 	awsService := aws.NewService()
-	handlers.SetAWSService(awsService)
-
 	csvProcessor := splitter.NewCSVProcessor()
-	handlers.SetCSVProcessor(csvProcessor)
 
 	go func() {
 		<-signals
@@ -52,8 +49,8 @@ func main() {
 		os.Exit(0)
 	}()
 
+	// For now this is redundant but in future we will be adding a health check endpoint.
 	router := pat.New()
-	router.Post("/splitter", handlers.Handle)
 
 	go func() {
 		if err := http.ListenAndServe(config.BindAddr, router); err != nil {
@@ -65,10 +62,4 @@ func main() {
 	consumerConfig := cluster.NewConfig()
 	consumer, err := cluster.NewConsumer([]string{config.KafkaAddr}, config.KafkaConsumerGroup, []string{config.KafkaConsumerTopic}, consumerConfig)
 	message.ConsumerLoop(consumer, awsService, csvProcessor)
-}
-
-// FileUploaded event
-type FileUploaded struct {
-	Filename string `json:"filename"`
-	Time     int64  `json:"time"`
 }

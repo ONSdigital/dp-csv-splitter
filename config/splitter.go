@@ -10,7 +10,6 @@ const bindAddrKey = "BIND_ADDR"
 const kafkaAddrKey = "KAFKA_ADDR"
 const kafkaConsumerGroup = "KAFKA_CONSUMER_GROUP"
 const kafkaConsumerTopic = "KAFKA_CONSUMER_TOPIC"
-const s3BucketKey = "S3_BUCKET"
 const awsRegionKey = "AWS_REGION"
 const topicNameKey = "TOPIC_NAME"
 const batchSizeKey = "BATCH_SIZE"
@@ -48,10 +47,6 @@ func init() {
 		KafkaAddr = kafkaAddrEnv
 	}
 
-	if s3BucketEnv := os.Getenv(s3BucketKey); len(s3BucketEnv) > 0 {
-		S3Bucket = s3BucketEnv
-	}
-
 	if awsRegionEnv := os.Getenv(awsRegionKey); len(awsRegionEnv) > 0 {
 		AWSRegion = awsRegionEnv
 	}
@@ -83,7 +78,6 @@ func Load() {
 		kafkaAddrKey:       KafkaAddr,
 		kafkaConsumerGroup: KafkaConsumerGroup,
 		kafkaConsumerTopic: KafkaConsumerTopic,
-		s3BucketKey:        S3Bucket,
 		awsRegionKey:       AWSRegion,
 		topicNameKey:       TopicName,
 		batchSizeKey:       BatchSize,
