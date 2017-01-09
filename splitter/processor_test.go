@@ -3,6 +3,7 @@ package splitter_test
 import (
 	"encoding/json"
 	"errors"
+	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
@@ -10,7 +11,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-	"github.com/ONSdigital/dp-csv-splitter/message/event"
 )
 
 var exampleHeaderLine string = "Observation,Data_Marking,Statistical_Unit_Eng,Statistical_Unit_Cym,Measure_Type_Eng,Measure_Type_Cym,Observation_Type,Empty,Obs_Type_Value,Unit_Multiplier,Unit_Of_Measure_Eng,Unit_Of_Measure_Cym,Confidentuality,Empty1,Geographic_Area,Empty2,Empty3,Time_Dim_Item_ID,Time_Dim_Item_Label_Eng,Time_Dim_Item_Label_Cym,Time_Type,Empty4,Statistical_Population_ID,Statistical_Population_Label_Eng,Statistical_Population_Label_Cym,CDID,CDIDDescrip,Empty5,Empty6,Empty7,Empty8,Empty9,Empty10,Empty11,Empty12,Dim_ID_1,dimension_Label_Eng_1,dimension_Label_Cym_1,Dim_Item_ID_1,dimension_Item_Label_Eng_1,dimension_Item_Label_Cym_1,Is_Total_1,Is_Sub_Total_1,Dim_ID_2,dimension_Label_Eng_2,dimension_Label_Cym_2,Dim_Item_ID_2,dimension_Item_Label_Eng_2,dimension_Item_Label_Cym_2,Is_Total_2,Is_Sub_Total_2\n"
@@ -62,12 +62,11 @@ func TestProcessor(t *testing.T) {
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
-			event := event.UploadEvent{
-				S3URL: s3URL,
-			}
+			uploadEvent := event.UploadEvent{S3URL: "s3://bucket1/some-file.csv", Time: time.Now().UTC().Unix()}
+			eventDetails, _ := uploadEvent.ConvertToEventDetails()
 
 			Convey("When the processor is called", func() {
-				Processor.Process(reader, event, startTime, datasetID)
+				Processor.Process(reader, eventDetails, startTime, datasetID)
 
 			})
 		})
@@ -83,12 +82,11 @@ func TestProcessor(t *testing.T) {
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
-			event := event.UploadEvent{
-				S3URL: s3URL,
-			}
+			uploadEvent := event.UploadEvent{S3URL: "s3://bucket1/some-file.csv", Time: time.Now().UTC().Unix()}
+			eventDetails, _ := uploadEvent.ConvertToEventDetails()
 
 			Convey("When the processor is called", func() {
-				Processor.Process(reader, event, startTime, datasetID)
+				Processor.Process(reader, eventDetails, startTime, datasetID)
 			})
 		})
 	})

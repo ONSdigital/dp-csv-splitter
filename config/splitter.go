@@ -26,9 +26,6 @@ var KafkaConsumerGroup = "file-uploaded"
 // KafkaConsumerTopic the name of the topic to consume messages from.
 var KafkaConsumerTopic = "file-uploaded"
 
-// S3Bucket the name of the AWS s3 bucket to get the CSV files from.
-var S3Bucket = "dp-csv-splitter"
-
 // AWSRegion the AWS region to use.
 var AWSRegion = "eu-west-1"
 

@@ -17,7 +17,7 @@ import (
 var messagesProcessed = 0
 
 func TestProcessor(t *testing.T) {
-	event := event.UploadEvent{
+	event := event.EventDetails{
 		Time:  time.Now().UTC().Unix(),
 		S3URL: "s3://some-bucket/some-file.csv",
 	}
@@ -56,14 +56,14 @@ var exampleCsvLine string = "153223,,Person,,Count,,,,,,,,,,K04000001,,,,,,,,,,,
 
 type mockAwsService struct{}
 
-func (awsService *mockAwsService) GetCSV(uploadEvent event.UploadEvent) (io.Reader, error) {
+func (awsService *mockAwsService) GetCSV(uploadEvent *event.EventDetails) (io.Reader, error) {
 	reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 	return reader, nil
 }
 
 type mockProcessor struct{}
 
-func (processor *mockProcessor) Process(r io.Reader, uploadEvent event.UploadEvent, startTime time.Time, datasetID string) {
+func (processor *mockProcessor) Process(r io.Reader, uploadEvent *event.EventDetails, startTime time.Time, datasetID string) {
 	messagesProcessed++
 	fmt.Println("Processor called!")
 }

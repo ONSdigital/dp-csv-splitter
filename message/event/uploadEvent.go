@@ -1,38 +1,42 @@
 package event
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/url"
 	"strings"
 )
 
-const S3_URL_FMT = "s3://%s/%s"
-
-// FileUploaded event
 type UploadEvent struct {
 	Time  int64  `json:"time"`
 	S3URL string `json:"s3URL"`
-	url   *url.URL
 }
 
-func (f *UploadEvent) GetS3FilePath() string {
-	if f.url == nil {
-		f.parseURL()
+func (event *UploadEvent) ConvertToEventDetails() (*EventDetails, error) {
+	s3url, err := url.Parse(event.S3URL)
+	if err != nil {
+		return nil, err
 	}
-	return strings.TrimPrefix(f.url.Path, "/")
-}
-
-func (f *UploadEvent) GetS3BucketName() string {
-	if f.url == nil {
-		f.parseURL()
+	_, err = url.ParseRequestURI(s3url.RequestURI())
+	if err != nil {
+		return nil, err
 	}
-	return f.url.Host
+	return &EventDetails{
+		Time:       event.Time,
+		FilePath:   strings.TrimPrefix(s3url.Path, "/"),
+		BucketName: s3url.Host,
+		S3URL:      s3url.String(),
+	}, nil
 }
 
-func (f *UploadEvent) parseURL() {
-	f.url, _ = url.Parse(f.S3URL)
+// FileUploaded event
+type EventDetails struct {
+	Time       int64
+	FilePath   string
+	BucketName string
+	S3URL      string
 }
 
-func (f *UploadEvent) GetS3URL() string {
-	return fmt.Sprintf(S3_URL_FMT, f.GetS3BucketName(), f.GetS3FilePath())
+func (e *EventDetails) String() string {
+	json, _ := json.Marshal(e)
+	return string(json)
 }

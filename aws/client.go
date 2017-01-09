@@ -14,7 +14,7 @@ import (
 
 // AWSClient interface defining the AWS client.
 type AWSService interface {
-	GetCSV(uploadEvent event.UploadEvent) (io.Reader, error)
+	GetCSV(eventDetails *event.EventDetails) (io.Reader, error)
 }
 
 // Client AWS client implementation.
@@ -26,7 +26,7 @@ func NewService() AWSService {
 }
 
 // GetFile get the requested file from AWS.
-func (cli *Service) GetCSV(uploadEvent event.UploadEvent) (io.Reader, error) {
+func (cli *Service) GetCSV(eventDetails *event.EventDetails) (io.Reader, error) {
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String(config.AWSRegion),
 	})
@@ -37,14 +37,14 @@ func (cli *Service) GetCSV(uploadEvent event.UploadEvent) (io.Reader, error) {
 	}
 
 	log.Debug("Requesting .csv file from AWS S3 bucket", log.Data{
-		"S3BucketName": uploadEvent.GetS3BucketName(),
-		"filePath":     uploadEvent.GetS3FilePath(),
+		"S3BucketName": eventDetails.BucketName,
+		"filePath":     eventDetails.FilePath,
 	})
 
 	s3Service := s3.New(session)
 	request := &s3.GetObjectInput{}
-	request.SetBucket(uploadEvent.GetS3BucketName())
-	request.SetKey(uploadEvent.GetS3FilePath())
+	request.SetBucket(eventDetails.BucketName)
+	request.SetKey(eventDetails.FilePath)
 
 	result, err := s3Service.GetObject(request)
 
