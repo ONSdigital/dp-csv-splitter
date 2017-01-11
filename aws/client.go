@@ -3,6 +3,7 @@ package aws
 import (
 	"bytes"
 	"github.com/ONSdigital/dp-csv-splitter/config"
+	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,7 +14,7 @@ import (
 
 // AWSClient interface defining the AWS client.
 type AWSService interface {
-	GetCSV(filePath string) (io.Reader, error)
+	GetCSV(event *event.FileUploaded) (io.Reader, error)
 }
 
 // Client AWS client implementation.
@@ -25,7 +26,7 @@ func NewService() AWSService {
 }
 
 // GetFile get the requested file from AWS.
-func (cli *Service) GetCSV(filePath string) (io.Reader, error) {
+func (cli *Service) GetCSV(event *event.FileUploaded) (io.Reader, error) {
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String(config.AWSRegion),
 	})
@@ -35,15 +36,16 @@ func (cli *Service) GetCSV(filePath string) (io.Reader, error) {
 		return nil, err
 	}
 
+	log.Debug("Requesting .csv file from AWS S3 bucket", log.Data{
+		"S3BucketName": event.GetBucketName(),
+		"filePath":     event.GetFilePath(),
+	})
+
 	s3Service := s3.New(session)
 	request := &s3.GetObjectInput{}
-	request.SetBucket(config.S3Bucket)
-	request.SetKey(filePath)
+	request.SetBucket(event.GetBucketName())
+	request.SetKey(event.GetFilePath())
 
-	log.Debug("Requesting .csv file from AWS S3 bucket", log.Data{
-		"S3BucketName": config.S3Bucket,
-		"filePath":     filePath,
-	})
 	result, err := s3Service.GetObject(request)
 
 	if err != nil {

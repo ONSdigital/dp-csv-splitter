@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"github.com/ONSdigital/dp-csv-splitter/config"
+	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/Shopify/sarama"
 	"io"
@@ -15,7 +16,7 @@ var Producer sarama.SyncProducer
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
-	Process(r io.Reader, filename string, startTime time.Time, datasetID string)
+	Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string)
 }
 
 // Processor implementation of the CSVProcessor interface.
@@ -29,12 +30,12 @@ func NewCSVProcessor() *Processor {
 type Message struct {
 	Index     int    `json:"index"`
 	Row       string `json:"row"`
-	Filename  string `json:"filename"`
 	StartTime int64  `json:"startTime"`
 	DatasetID string `json:"datasetID"`
+	S3URL     string `json:"s3URL"`
 }
 
-func (p *Processor) Process(r io.Reader, filename string, startTime time.Time, datasetID string) {
+func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string) {
 
 	scanner := bufio.NewScanner(r)
 	var index = 0
@@ -64,7 +65,7 @@ func (p *Processor) Process(r io.Reader, filename string, startTime time.Time, d
 				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
 
 			} else {
-				producerMsg := createMessage(scanner.Text(), index, filename, startTime, datasetID)
+				producerMsg := createMessage(scanner.Text(), index, event, startTime, datasetID)
 				msgs[batchIndex] = producerMsg
 				index++
 			}
@@ -85,12 +86,12 @@ func (p *Processor) Process(r io.Reader, filename string, startTime time.Time, d
 	})
 }
 
-func createMessage(row string, index int, filename string, startTime time.Time, datasetID string) *sarama.ProducerMessage {
+func createMessage(row string, index int, event *event.FileUploaded, startTime time.Time, datasetID string) *sarama.ProducerMessage {
 
 	message := Message{
 		Index:     index,
 		Row:       row,
-		Filename:  filename,
+		S3URL:     event.GetURL(),
 		StartTime: startTime.UTC().Unix(),
 		DatasetID: datasetID,
 	}

@@ -3,10 +3,12 @@ package splitter_test
 import (
 	"encoding/json"
 	"errors"
+	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
 	. "github.com/smartystreets/goconvey/convey"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -22,22 +24,23 @@ func TestProcessor(t *testing.T) {
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForLocal
 	kafkaConfig.Producer.Return.Successes = true
 
-	filename := "exampleFilename.csv"
+	s3URL := "s3://test-bucket/exampleFilename.csv"
 	startTime := time.Now()
 	datasetID := "werqae-asdqwrwf-erwe"
+	var message *splitter.Message
 
 	Convey("Given a mock producer with a single expected intput that succeeds", t, func() {
 
 		mockProducer := mocks.NewSyncProducer(t, kafkaConfig)
 		mockProducer.ExpectSendMessageWithCheckerFunctionAndSucceed(func(val []byte) error {
 
-			var message *splitter.Message
+			//var message *splitter.Message
 			json.Unmarshal(val, &message)
 
 			if message.DatasetID != datasetID {
 				return errors.New("Dataset ID was not added to the message.")
 			}
-			if message.Filename != filename {
+			if message.S3URL != s3URL {
 				return errors.New("CSV filename was not added to the message.")
 			}
 			if message.StartTime != startTime.UTC().Unix() {
@@ -59,9 +62,13 @@ func TestProcessor(t *testing.T) {
 
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
+			url, _ := url.Parse("s3://bucket/dir/test.csv")
+
+			s3URL := event.NewS3URL(url)
+			uploadEvent := &event.FileUploaded{S3URL: s3URL, Time: time.Now().UTC().Unix()}
 
 			Convey("When the processor is called", func() {
-				Processor.Process(reader, filename, startTime, datasetID)
+				Processor.Process(reader, uploadEvent, startTime, datasetID)
 
 			})
 		})
@@ -73,12 +80,16 @@ func TestProcessor(t *testing.T) {
 		splitter.Producer = mockProducer
 
 		var Processor = splitter.NewCSVProcessor()
+		url, _ := url.Parse("s3://bucket/dir/test.csv")
 
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
+			s3URL := event.NewS3URL(url)
+			uploadEvent := &event.FileUploaded{S3URL: s3URL, Time: time.Now().UTC().Unix()}
+
 			Convey("When the processor is called", func() {
-				Processor.Process(reader, filename, startTime, datasetID)
+				Processor.Process(reader, uploadEvent, startTime, datasetID)
 			})
 		})
 	})

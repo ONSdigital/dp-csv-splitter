@@ -10,7 +10,6 @@ const bindAddrKey = "BIND_ADDR"
 const kafkaAddrKey = "KAFKA_ADDR"
 const kafkaConsumerGroup = "KAFKA_CONSUMER_GROUP"
 const kafkaConsumerTopic = "KAFKA_CONSUMER_TOPIC"
-const s3BucketKey = "S3_BUCKET"
 const awsRegionKey = "AWS_REGION"
 const topicNameKey = "TOPIC_NAME"
 const batchSizeKey = "BATCH_SIZE"
@@ -26,9 +25,6 @@ var KafkaConsumerGroup = "file-uploaded"
 
 // KafkaConsumerTopic the name of the topic to consume messages from.
 var KafkaConsumerTopic = "file-uploaded"
-
-// S3Bucket the name of the AWS s3 bucket to get the CSV files from.
-var S3Bucket = "dp-csv-splitter"
 
 // AWSRegion the AWS region to use.
 var AWSRegion = "eu-west-1"
@@ -46,10 +42,6 @@ func init() {
 
 	if kafkaAddrEnv := os.Getenv(kafkaAddrKey); len(kafkaAddrEnv) > 0 {
 		KafkaAddr = kafkaAddrEnv
-	}
-
-	if s3BucketEnv := os.Getenv(s3BucketKey); len(s3BucketEnv) > 0 {
-		S3Bucket = s3BucketEnv
 	}
 
 	if awsRegionEnv := os.Getenv(awsRegionKey); len(awsRegionEnv) > 0 {
@@ -83,7 +75,6 @@ func Load() {
 		kafkaAddrKey:       KafkaAddr,
 		kafkaConsumerGroup: KafkaConsumerGroup,
 		kafkaConsumerTopic: KafkaConsumerTopic,
-		s3BucketKey:        S3Bucket,
 		awsRegionKey:       AWSRegion,
 		topicNameKey:       TopicName,
 		batchSizeKey:       BatchSize,
