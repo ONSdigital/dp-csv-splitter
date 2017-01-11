@@ -20,27 +20,22 @@ func ConsumerLoop(listener Listener, awsService aws.AWSService, processor splitt
 
 func processMessage(message *sarama.ConsumerMessage, awsService aws.AWSService, csvProcessor splitter.CSVProcessor) error {
 
-	var uploadEvent event.UploadEvent
-	if err := json.Unmarshal(message.Value, &uploadEvent); err != nil {
+	var event event.FileUploaded
+	if err := json.Unmarshal(message.Value, &event); err != nil {
 		log.Error(err, nil)
 		return err
 	}
 
-	eventDetails, err := uploadEvent.ConvertToEventDetails()
-	if err != nil {
-		log.ErrorC("Failed to create eventDetails from uploadEvent", err, nil)
-		return err
-	}
-	log.Debug("Processing uploadEvent message, eventDetails: "+eventDetails.String(), nil)
+	log.Debug("Processing uploadEvent message", log.Data{"url": event.GetURL()})
 
-	awsReader, err := awsService.GetCSV(eventDetails)
+	awsReader, err := awsService.GetCSV(&event)
 	if err != nil {
 		log.Error(err, log.Data{"message": "Error while attempting get to get from from AWS s3 bucket."})
 		return err
 	}
 
 	datasetId := uuid.NewV4().String()
-	csvProcessor.Process(awsReader, eventDetails, time.Now(), datasetId)
+	csvProcessor.Process(awsReader, &event, time.Now(), datasetId)
 	return nil
 }
 

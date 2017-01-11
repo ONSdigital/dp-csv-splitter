@@ -16,7 +16,7 @@ var Producer sarama.SyncProducer
 
 // CSVProcessor defines the CSVProcessor interface.
 type CSVProcessor interface {
-	Process(r io.Reader, eventDetails *event.EventDetails, startTime time.Time, datasetID string)
+	Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string)
 }
 
 // Processor implementation of the CSVProcessor interface.
@@ -35,7 +35,7 @@ type Message struct {
 	S3URL     string `json:"s3URL"`
 }
 
-func (p *Processor) Process(r io.Reader, eventDetails *event.EventDetails, startTime time.Time, datasetID string) {
+func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string) {
 
 	scanner := bufio.NewScanner(r)
 	var index = 0
@@ -65,7 +65,7 @@ func (p *Processor) Process(r io.Reader, eventDetails *event.EventDetails, start
 				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
 
 			} else {
-				producerMsg := createMessage(scanner.Text(), index, eventDetails, startTime, datasetID)
+				producerMsg := createMessage(scanner.Text(), index, event, startTime, datasetID)
 				msgs[batchIndex] = producerMsg
 				index++
 			}
@@ -86,12 +86,12 @@ func (p *Processor) Process(r io.Reader, eventDetails *event.EventDetails, start
 	})
 }
 
-func createMessage(row string, index int, eventDetails *event.EventDetails, startTime time.Time, datasetID string) *sarama.ProducerMessage {
+func createMessage(row string, index int, event *event.FileUploaded, startTime time.Time, datasetID string) *sarama.ProducerMessage {
 
 	message := Message{
 		Index:     index,
 		Row:       row,
-		S3URL:     eventDetails.S3URL,
+		S3URL:     event.GetURL(),
 		StartTime: startTime.UTC().Unix(),
 		DatasetID: datasetID,
 	}

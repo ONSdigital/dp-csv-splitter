@@ -10,49 +10,74 @@ import (
 const bucketName = "csv-bucket"
 const filePath = "/dir1/test-file.csv"
 
-func TestUploadEvent_ConvertToEventDetails(t *testing.T) {
+func TestFileUploaded_GetURL(t *testing.T) {
+	Convey("Given a valid FileUploaded", t, func() {
 
-	time := time.Now().UTC().Unix()
-
-	expected := &EventDetails{
-		S3URL:      "s3://" + bucketName + filePath,
-		BucketName: bucketName,
-		FilePath:   strings.TrimPrefix(filePath, "/"),
-		Time:       time,
-	}
-
-	Convey("Given a valid UploadEvent", t, func() {
-		uploadEvent := &UploadEvent{
-			S3URL: "s3://" + bucketName + filePath,
-			Time:  time,
+		input := &FileUploaded{
+			S3URL: NewS3URL("s3://" + bucketName + filePath),
+			Time:  time.Now().UTC().Unix(),
 		}
 
-		Convey("When ConvertToEventDetails is called", func() {
-			actual, err := uploadEvent.ConvertToEventDetails()
+		Convey("When get is called", func() {
+			result := input.GetURL()
 
 			Convey("Then the correct value is returned.", func() {
-				So(actual.FilePath, ShouldEqual, expected.FilePath)
-				So(actual.BucketName, ShouldEqual, expected.BucketName)
-				So(actual.S3URL, ShouldEqual, expected.S3URL)
-				So(actual.Time, ShouldEqual, expected.Time)
-			})
-
-			Convey("And there are no errors", func() {
-				So(err, ShouldEqual, nil)
+				So(result, ShouldEqual, "s3://"+bucketName+filePath)
 			})
 		})
 	})
+}
 
-	Convey("Given an UploadEvent with an invalid s3 URL", t, func() {
-		uploadEvent := &UploadEvent{
-			S3URL: "123456789",
-			Time:  time,
+func TestFileUploaded_GetBucketName(t *testing.T) {
+	Convey("Given a valid FileUploaded event.", t, func() {
+
+		input := &FileUploaded{
+			S3URL: NewS3URL("s3://" + bucketName + filePath),
+			Time:  time.Now().UTC().Unix(),
 		}
-		Convey("When ConvertToEventDetails is called", func() {
-			_, err := uploadEvent.ConvertToEventDetails()
 
-			Convey("Then the appr opriate error is returned..", func() {
-				So(err != nil, ShouldBeTrue)
+		Convey("When GetBucketName is called", func() {
+			result := input.GetBucketName()
+
+			Convey("Then the correct value is returned.", func() {
+				So(result, ShouldEqual, bucketName)
+			})
+		})
+	})
+}
+
+func TestFileUploaded_GetFilePath(t *testing.T) {
+	Convey("Given a valid FileUploaded event.", t, func() {
+
+		input := &FileUploaded{
+			S3URL: NewS3URL("s3://" + bucketName + filePath),
+			Time:  time.Now().UTC().Unix(),
+		}
+
+		Convey("When GetFilePath is called", func() {
+			result := input.GetFilePath()
+
+			Convey("Then the correct value is returned.", func() {
+				So(result, ShouldEqual, strings.TrimPrefix(filePath, "/"))
+			})
+		})
+	})
+}
+
+func TestS3URLType_UnmarshalJSON(t *testing.T) {
+	Convey("Given a valid S3URLType JSON", t, func() {
+		expected := NewS3URL("s3://" + bucketName + filePath)
+
+		Convey("When Unmarshalled", func() {
+			var actual S3URLType
+			err := actual.UnmarshalJSON([]byte("s3://" + bucketName + filePath))
+
+			Convey("Then there are no errors", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("And the value has been correctly unmarshalled.", func() {
+				So(&actual, ShouldResemble, expected)
 			})
 		})
 	})

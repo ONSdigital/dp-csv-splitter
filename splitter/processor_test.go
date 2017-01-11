@@ -62,11 +62,11 @@ func TestProcessor(t *testing.T) {
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
-			uploadEvent := event.UploadEvent{S3URL: "s3://bucket1/some-file.csv", Time: time.Now().UTC().Unix()}
-			eventDetails, _ := uploadEvent.ConvertToEventDetails()
+			s3URL := event.NewS3URL("s3://bucket1/some-file.csv")
+			uploadEvent := &event.FileUploaded{S3URL: s3URL, Time: time.Now().UTC().Unix()}
 
 			Convey("When the processor is called", func() {
-				Processor.Process(reader, eventDetails, startTime, datasetID)
+				Processor.Process(reader, uploadEvent, startTime, datasetID)
 
 			})
 		})
@@ -82,11 +82,11 @@ func TestProcessor(t *testing.T) {
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
-			uploadEvent := event.UploadEvent{S3URL: "s3://bucket1/some-file.csv", Time: time.Now().UTC().Unix()}
-			eventDetails, _ := uploadEvent.ConvertToEventDetails()
+			s3URL := event.NewS3URL("s3://bucket1/some-file.csv")
+			uploadEvent := &event.FileUploaded{S3URL: s3URL, Time: time.Now().UTC().Unix()}
 
 			Convey("When the processor is called", func() {
-				Processor.Process(reader, eventDetails, startTime, datasetID)
+				Processor.Process(reader, uploadEvent, startTime, datasetID)
 			})
 		})
 	})

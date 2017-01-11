@@ -1,42 +1,47 @@
 package event
 
 import (
-	"encoding/json"
+	"github.com/ONSdigital/go-ns/log"
 	"net/url"
 	"strings"
 )
 
-type UploadEvent struct {
-	Time  int64  `json:"time"`
-	S3URL string `json:"s3URL"`
-}
-
-func (event *UploadEvent) ConvertToEventDetails() (*EventDetails, error) {
-	s3url, err := url.Parse(event.S3URL)
-	if err != nil {
-		return nil, err
-	}
-	_, err = url.ParseRequestURI(s3url.RequestURI())
-	if err != nil {
-		return nil, err
-	}
-	return &EventDetails{
-		Time:       event.Time,
-		FilePath:   strings.TrimPrefix(s3url.Path, "/"),
-		BucketName: s3url.Host,
-		S3URL:      s3url.String(),
-	}, nil
-}
-
 // FileUploaded event
-type EventDetails struct {
-	Time       int64
-	FilePath   string
-	BucketName string
-	S3URL      string
+type FileUploaded struct {
+	Time  int64
+	S3URL *S3URLType
 }
 
-func (e *EventDetails) String() string {
-	json, _ := json.Marshal(e)
-	return string(json)
+type S3URLType struct {
+	URL *url.URL
+}
+
+func NewS3URL(val string) *S3URLType {
+	s3url, _ := url.Parse(val)
+	return &S3URLType{s3url}
+}
+
+func (x *S3URLType) UnmarshalJSON(b []byte) (err error) {
+	if b[0] == '"' && b[len(b)-1] == '"' {
+		b = b[1 : len(b)-1]
+	}
+	url, err := url.Parse(string(b))
+	if err != nil {
+		log.Error(err, log.Data{"Details": "Failed to unmarshal value to S3URLType"})
+		return err
+	}
+	x.URL = url
+	return nil
+}
+
+func (d *FileUploaded) GetBucketName() string {
+	return d.S3URL.URL.Host
+}
+
+func (d *FileUploaded) GetFilePath() string {
+	return strings.TrimPrefix(d.S3URL.URL.Path, "/")
+}
+
+func (d *FileUploaded) GetURL() string {
+	return d.S3URL.URL.String()
 }
