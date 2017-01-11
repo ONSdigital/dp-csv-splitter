@@ -2,6 +2,7 @@ package event
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -11,10 +12,12 @@ const bucketName = "csv-bucket"
 const filePath = "/dir1/test-file.csv"
 
 func TestFileUploaded_GetURL(t *testing.T) {
+	s3URL, _ := url.Parse("s3://" + bucketName + filePath)
+
 	Convey("Given a valid FileUploaded", t, func() {
 
 		input := &FileUploaded{
-			S3URL: NewS3URL("s3://" + bucketName + filePath),
+			S3URL: NewS3URL(s3URL),
 			Time:  time.Now().UTC().Unix(),
 		}
 
@@ -30,9 +33,10 @@ func TestFileUploaded_GetURL(t *testing.T) {
 
 func TestFileUploaded_GetBucketName(t *testing.T) {
 	Convey("Given a valid FileUploaded event.", t, func() {
+		s3URL, _ := url.Parse("s3://" + bucketName + filePath)
 
 		input := &FileUploaded{
-			S3URL: NewS3URL("s3://" + bucketName + filePath),
+			S3URL: NewS3URL(s3URL),
 			Time:  time.Now().UTC().Unix(),
 		}
 
@@ -48,9 +52,10 @@ func TestFileUploaded_GetBucketName(t *testing.T) {
 
 func TestFileUploaded_GetFilePath(t *testing.T) {
 	Convey("Given a valid FileUploaded event.", t, func() {
+		s3URL, _ := url.Parse("s3://" + bucketName + filePath)
 
 		input := &FileUploaded{
-			S3URL: NewS3URL("s3://" + bucketName + filePath),
+			S3URL: NewS3URL(s3URL),
 			Time:  time.Now().UTC().Unix(),
 		}
 
@@ -66,7 +71,8 @@ func TestFileUploaded_GetFilePath(t *testing.T) {
 
 func TestS3URLType_UnmarshalJSON(t *testing.T) {
 	Convey("Given a valid S3URLType JSON", t, func() {
-		expected := NewS3URL("s3://" + bucketName + filePath)
+		s3URL, _ := url.Parse("s3://" + bucketName + filePath)
+		expected := NewS3URL(s3URL)
 
 		Convey("When Unmarshalled", func() {
 			var actual S3URLType

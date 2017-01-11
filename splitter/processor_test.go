@@ -8,6 +8,7 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
 	. "github.com/smartystreets/goconvey/convey"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -61,8 +62,9 @@ func TestProcessor(t *testing.T) {
 
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
+			url, _ := url.Parse("s3://bucket/dir/test.csv")
 
-			s3URL := event.NewS3URL("s3://bucket1/some-file.csv")
+			s3URL := event.NewS3URL(url)
 			uploadEvent := &event.FileUploaded{S3URL: s3URL, Time: time.Now().UTC().Unix()}
 
 			Convey("When the processor is called", func() {
@@ -78,11 +80,12 @@ func TestProcessor(t *testing.T) {
 		splitter.Producer = mockProducer
 
 		var Processor = splitter.NewCSVProcessor()
+		url, _ := url.Parse("s3://bucket/dir/test.csv")
 
 		Convey("Given a reader with a single CSV line", func() {
 			reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
 
-			s3URL := event.NewS3URL("s3://bucket1/some-file.csv")
+			s3URL := event.NewS3URL(url)
 			uploadEvent := &event.FileUploaded{S3URL: s3URL, Time: time.Now().UTC().Unix()}
 
 			Convey("When the processor is called", func() {

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/config"
-	//"github.com/ONSdigital/dp-csv-splitter/handlers"
 	"github.com/ONSdigital/dp-csv-splitter/message"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/ONSdigital/go-ns/log"

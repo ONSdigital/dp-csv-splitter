@@ -9,6 +9,7 @@ import (
 	"github.com/Shopify/sarama/mocks"
 	. "github.com/smartystreets/goconvey/convey"
 	"io"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -17,9 +18,10 @@ import (
 var messagesProcessed = 0
 
 func TestProcessor(t *testing.T) {
+	s3URL, _ := url.Parse("s3://bucket/dir/test.csv")
 	event := &event.FileUploaded{
 		Time:  time.Now().UTC().Unix(),
-		S3URL: event.NewS3URL("s3://some-bucket/some-file.csv"),
+		S3URL: event.NewS3URL(s3URL),
 	}
 
 	messageJson, _ := json.Marshal(event)
