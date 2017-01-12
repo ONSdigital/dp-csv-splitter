@@ -47,9 +47,8 @@ You will need to have access to the ONS DP AWS account and to have AWSCLI instal
 You will also need to have [dp-dd-file-uploader](https://github.com/ONSdigital/dp-dd-file-uploader]) running to supply
 messages for it to consume.
 
-If everything is working correctly the splitter will retrieve the file from the AWS S3 bucket - specified by the
-```S3URL``` parameter - split it into individual rows posting each as a kafka message to the outbound kafka topic ready
-to be consumed by the [database-loader].
+If everything is working correctly the splitter will retrieve the file from the AWS S3 bucket (the
+```S3URL``` parameter specifies the file to process and its location) split it into individual rows posting each as a kafka message to the outbound kafka topic ready to be consumed by the [database-loader].
 
 ### Configuration
 
