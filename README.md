@@ -1,11 +1,9 @@
 dp-csv-splitter
 ================
 
-Application retrieves a specified CSV file from AWS s3 bucket, splits it into rows sending each as a individual message
+Application retrieves a specified CSV file from AWS S3 bucket, splits it into rows sending each as a individual message
 to the configured Kafka Topic to be consumed by the [database-loader]
 (https://github.com/ONSdigital/dp-dd-database-loader).
-
-The ```splitter``` consumes messages from a kafka topic specifying an AWS S3 URL to the file to process.
 
 ### Getting started
 
@@ -46,10 +44,12 @@ make debug
 You will need to have access to the ONS DP AWS account and to have AWSCLI installed locally - follow this
 [guide](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html)
 
-You will need to run the [dp-dd-file-uploader](https://github.com/ONSdigital/dp-dd-file-uploader]) to provide it with messages to consume.
+You will also need to have [dp-dd-file-uploader](https://github.com/ONSdigital/dp-dd-file-uploader]) running to supply
+messages for it to consume.
 
-If everything is working correctly the splitter will retrieve the file from the AWS S3 bucket specified in the consumed message (S3URL parameter),
-split it into individual rows sending each as a kafka message to the outbound kafka topic.
+If everything is working correctly the splitter will retrieve the file from the AWS S3 bucket - specified by the
+```S3URL``` parameter - split it into individual rows posting each as a kafka message to the outbound kafka topic ready
+to be consumed by the [database-loader].
 
 ### Configuration
 
