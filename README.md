@@ -1,11 +1,9 @@
 dp-csv-splitter
 ================
 
-Application retrieves a specified CSV file from AWS s3 bucket, splits it into rows sending each as a individual message
+Application retrieves a specified CSV file from AWS S3 bucket, splits it into rows sending each as a individual message
 to the configured Kafka Topic to be consumed by the [database-loader]
 (https://github.com/ONSdigital/dp-dd-database-loader).
-
-The ```/splitter``` endpoint accepts HTTP POST request with a SplitterRequest body ```{"filePath": "$PATH_TO_FILE$"}```
 
 ### Getting started
 
@@ -43,13 +41,14 @@ Run the the splitter
 make debug
 ```
 
-The following curl command will instruct the application attempt to get the specified file from the AWS bucket
-(see Configuration) split it into rows & send each as kafka message.
-```
-curl -H "Content-Type: application/json" -X POST -d '{"filePath": "$PATH_TO_FILE$"}' http://localhost:21000/splitter
-```
+You will need to have access to the ONS DP AWS account and to have AWSCLI installed locally - follow this
+[guide](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html)
 
-The project includes a small data set in the `sample_csv` directory for test usage.
+You will also need to have [dp-dd-file-uploader](https://github.com/ONSdigital/dp-dd-file-uploader]) running to supply
+messages for it to consume.
+
+If everything is working correctly the splitter will retrieve the file from the AWS S3 bucket (the
+```S3URL``` parameter specifies the file to process and its location) split it into individual rows posting each as a kafka message to the outbound kafka topic ready to be consumed by the [database-loader].
 
 ### Configuration
 
@@ -59,7 +58,6 @@ The project includes a small data set in the `sample_csv` directory for test usa
 | KAFKA_ADDR           | "http://localhost:9092" | The Kafka address to send messages to.
 | KAFKA_CONSUMER_GROUP | "file-uploaded"         | The Kafka consumer group to consume messages from.
 | KAFKA_CONSUMER_TOPIC | "file-uploaded"         | The Kafka topic to consume messages from.
-| S3_BUCKET            | "dp-csv-splitter-1"     | The name of AWS S3 bucket to get the csv files from.
 | AWS_REGION           | "eu-west-1"             | The AWS region to use.
 | TOPIC_NAME           | "test"                  | The name of the Kafka topic to send the messages to.
 
