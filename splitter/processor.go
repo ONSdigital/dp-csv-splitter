@@ -35,6 +35,11 @@ type Message struct {
 	S3URL     string `json:"s3URL"`
 }
 
+type DatasetSplitEvent struct {
+	DatasetID string `json:"datasetID"`
+	TotalRows int `json:"totalRows"`
+}
+
 func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string) {
 
 	scanner := bufio.NewScanner(r)
@@ -42,6 +47,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 	var batchSize = config.BatchSize
 	var batchNumber = 1
 	var isFinalBatch = false
+	var totalRows int
 
 	// Scan and discard header row (for now) - the data rows contain sufficient information about the structure
 	if !scanner.Scan() && scanner.Err() == io.EOF {
@@ -52,7 +58,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 	for !isFinalBatch {
 		// each batch
 
-		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
+		log.Debug("Processing batch number " + strconv.Itoa(batchNumber) + " index: " + strconv.Itoa(index), nil)
 		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
 		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ {
@@ -62,8 +68,9 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 				log.Debug("EOF reached, no more records to process", nil)
 				isFinalBatch = true
 				msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
-				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
-
+				log.Debug(strconv.Itoa(batchIndex) + " messages in the final batch.", nil)
+				totalRows = ((batchNumber - 1) * batchSize) + batchIndex
+				log.Debug(strconv.Itoa(totalRows) + " messages in total.", nil)
 			} else {
 				producerMsg := createMessage(scanner.Text(), index, event, startTime, datasetID)
 				msgs[batchIndex] = producerMsg
@@ -84,6 +91,31 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 	log.Debug("Kafka Loop details", log.Data{
 		"Enqueued": index,
 	})
+}
+
+func sendDatasetSplitEvent(datasetID string, totalRows int) {
+
+	//message := DatasetSplitEvent{
+	//	DatasetID:datasetID,
+	//	TotalRows:totalRows,
+	//}
+	//
+	//messageJSON, err := json.Marshal(message)
+	//
+	//if err != nil {
+	//	log.Error(err, log.Data{
+	//		"details": "Could not create the json representation of message",
+	//		"message": messageJSON,
+	//	})
+	//	panic(err)
+	//}
+	//
+	//_, _, err = Producer.SendMessage(message)
+	//if err != nil {
+	//	log.Error(err, log.Data{
+	//		"details": "Failed to add messages to Kafka",
+	//	})
+	//}
 }
 
 func createMessage(row string, index int, event *event.FileUploaded, startTime time.Time, datasetID string) *sarama.ProducerMessage {
