@@ -59,7 +59,8 @@ If everything is working correctly the splitter will retrieve the file from the 
 | KAFKA_CONSUMER_GROUP | "file-uploaded"         | The Kafka consumer group to consume messages from.
 | KAFKA_CONSUMER_TOPIC | "file-uploaded"         | The Kafka topic to consume messages from.
 | AWS_REGION           | "eu-west-1"             | The AWS region to use.
-| TOPIC_NAME           | "test"                  | The name of the Kafka topic to send the messages to.
+| TOPIC_NAME           | "test"                  | The name of the Kafka topic to send the row messages to.
+| DATASET_TOPIC_NAME   | "dataset-status"        | The name of the Kafka topic to send the dataset completion messages to.
 
 ### Contributing
 

@@ -11,7 +11,8 @@ const kafkaAddrKey = "KAFKA_ADDR"
 const kafkaConsumerGroup = "KAFKA_CONSUMER_GROUP"
 const kafkaConsumerTopic = "KAFKA_CONSUMER_TOPIC"
 const awsRegionKey = "AWS_REGION"
-const topicNameKey = "TOPIC_NAME"
+const rowTopicNameKey = "TOPIC_NAME"
+const datasetTopicNameKey = "DATASET_TOPIC_NAME"
 const batchSizeKey = "BATCH_SIZE"
 
 // BindAddr the address to bind to.
@@ -29,8 +30,11 @@ var KafkaConsumerTopic = "file-uploaded"
 // AWSRegion the AWS region to use.
 var AWSRegion = "eu-west-1"
 
-// TopicName the name of the Kafka topic to send messages to.
-var TopicName = "test"
+// RowTopicName the name of the Kafka topic to send row messages to.
+var RowTopicName = "test"
+
+// RowTopicName the name of the Kafka topic to send row messages to.
+var DatasetTopicName = "dataset-status"
 
 // BatchSize the number of CSV lines to process in a single batch.
 var BatchSize int = 100
@@ -48,8 +52,12 @@ func init() {
 		AWSRegion = awsRegionEnv
 	}
 
-	if topicNameEnv := os.Getenv(topicNameKey); len(topicNameEnv) > 0 {
-		TopicName = topicNameEnv
+	if topicNameEnv := os.Getenv(rowTopicNameKey); len(topicNameEnv) > 0 {
+		RowTopicName = topicNameEnv
+	}
+
+	if datasetTopicNameEnv := os.Getenv(datasetTopicNameKey); len(datasetTopicNameEnv) > 0 {
+		DatasetTopicName = datasetTopicNameEnv
 	}
 
 	if consumerGroupEnv := os.Getenv(kafkaConsumerGroup); len(consumerGroupEnv) > 0 {
@@ -71,12 +79,13 @@ func init() {
 func Load() {
 	// Will call init().
 	log.Debug("dp-csv-splitter Configuration", log.Data{
-		bindAddrKey:        BindAddr,
-		kafkaAddrKey:       KafkaAddr,
-		kafkaConsumerGroup: KafkaConsumerGroup,
-		kafkaConsumerTopic: KafkaConsumerTopic,
-		awsRegionKey:       AWSRegion,
-		topicNameKey:       TopicName,
-		batchSizeKey:       BatchSize,
+		bindAddrKey:         BindAddr,
+		kafkaAddrKey:        KafkaAddr,
+		kafkaConsumerGroup:  KafkaConsumerGroup,
+		kafkaConsumerTopic:  KafkaConsumerTopic,
+		awsRegionKey:        AWSRegion,
+		rowTopicNameKey:     RowTopicName,
+		datasetTopicNameKey: DatasetTopicName,
+		batchSizeKey:        BatchSize,
 	})
 }

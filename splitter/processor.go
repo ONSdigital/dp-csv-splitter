@@ -27,7 +27,7 @@ func NewCSVProcessor() *Processor {
 	return &Processor{}
 }
 
-type Message struct {
+type RowMessage struct {
 	Index     int    `json:"index"`
 	Row       string `json:"row"`
 	StartTime int64  `json:"startTime"`
@@ -38,6 +38,8 @@ type Message struct {
 type DatasetSplitEvent struct {
 	DatasetID string `json:"datasetID"`
 	TotalRows int `json:"totalRows"`
+	RowsProcessed int `json:"rowsProcessed"`
+	SplitTime int64  `json:"lastUpdate"`
 }
 
 func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string) {
@@ -71,6 +73,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 				log.Debug(strconv.Itoa(batchIndex) + " messages in the final batch.", nil)
 				totalRows = ((batchNumber - 1) * batchSize) + batchIndex
 				log.Debug(strconv.Itoa(totalRows) + " messages in total.", nil)
+				sendDatasetSplitEvent(datasetID, totalRows)
 			} else {
 				producerMsg := createMessage(scanner.Text(), index, event, startTime, datasetID)
 				msgs[batchIndex] = producerMsg
@@ -95,32 +98,39 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 
 func sendDatasetSplitEvent(datasetID string, totalRows int) {
 
-	//message := DatasetSplitEvent{
-	//	DatasetID:datasetID,
-	//	TotalRows:totalRows,
-	//}
-	//
-	//messageJSON, err := json.Marshal(message)
-	//
-	//if err != nil {
-	//	log.Error(err, log.Data{
-	//		"details": "Could not create the json representation of message",
-	//		"message": messageJSON,
-	//	})
-	//	panic(err)
-	//}
-	//
-	//_, _, err = Producer.SendMessage(message)
-	//if err != nil {
-	//	log.Error(err, log.Data{
-	//		"details": "Failed to add messages to Kafka",
-	//	})
-	//}
+	message := DatasetSplitEvent{
+		DatasetID:datasetID,
+		TotalRows:totalRows,
+		SplitTime: time.Now().UTC().Unix(),
+	}
+
+	messageJSON, err := json.Marshal(message)
+	if err != nil {
+		log.Error(err, log.Data{
+			"details": "Could not create the json representation of message",
+			"message": messageJSON,
+		})
+		panic(err)
+	}
+
+	producerMsg := &sarama.ProducerMessage{
+		Topic: config.DatasetTopicName,
+		Key:   sarama.StringEncoder(datasetID),
+		Value: sarama.ByteEncoder(messageJSON),
+	}
+
+	log.Debug("Sending dataset status message", log.Data{"message": messageJSON})
+	_, _, err = Producer.SendMessage(producerMsg)
+	if err != nil {
+		log.Error(err, log.Data{
+			"details": "Failed to add messages to Kafka",
+		})
+	}
 }
 
 func createMessage(row string, index int, event *event.FileUploaded, startTime time.Time, datasetID string) *sarama.ProducerMessage {
 
-	message := Message{
+	message := RowMessage{
 		Index:     index,
 		Row:       row,
 		S3URL:     event.GetURL(),
@@ -140,7 +150,7 @@ func createMessage(row string, index int, event *event.FileUploaded, startTime t
 
 	strTime := strconv.Itoa(int(time.Now().Unix()))
 	producerMsg := &sarama.ProducerMessage{
-		Topic: config.TopicName,
+		Topic: config.RowTopicName,
 		Key:   sarama.StringEncoder(strTime),
 		Value: sarama.ByteEncoder(messageJSON),
 	}
