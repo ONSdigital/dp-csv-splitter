@@ -2,14 +2,15 @@ package aws
 
 import (
 	"bytes"
+	"io"
+	"io/ioutil"
+
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"io"
-	"io/ioutil"
 )
 
 // AWSClient interface defining the AWS client.

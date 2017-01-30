@@ -3,16 +3,17 @@ package message_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ONSdigital/dp-csv-splitter/message"
-	"github.com/ONSdigital/dp-csv-splitter/message/event"
-	"github.com/Shopify/sarama"
-	"github.com/Shopify/sarama/mocks"
-	. "github.com/smartystreets/goconvey/convey"
 	"io"
 	"net/url"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/ONSdigital/dp-csv-splitter/message"
+	"github.com/ONSdigital/dp-csv-splitter/message/event"
+	"github.com/Shopify/sarama"
+	"github.com/Shopify/sarama/mocks"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var messagesProcessed = 0

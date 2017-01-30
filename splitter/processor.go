@@ -3,13 +3,14 @@ package splitter
 import (
 	"bufio"
 	"encoding/json"
+	"io"
+	"strconv"
+	"time"
+
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/Shopify/sarama"
-	"io"
-	"strconv"
-	"time"
 )
 
 var Producer sarama.SyncProducer
@@ -36,10 +37,10 @@ type RowMessage struct {
 }
 
 type DatasetSplitEvent struct {
-	DatasetID string `json:"datasetID"`
-	TotalRows int `json:"totalRows"`
-	RowsProcessed int `json:"rowsProcessed"`
-	SplitTime int64  `json:"lastUpdate"`
+	DatasetID     string `json:"datasetID"`
+	TotalRows     int    `json:"totalRows"`
+	RowsProcessed int    `json:"rowsProcessed"`
+	SplitTime     int64  `json:"lastUpdate"`
 }
 
 func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string) {
@@ -60,7 +61,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 	for !isFinalBatch {
 		// each batch
 
-		log.Debug("Processing batch number " + strconv.Itoa(batchNumber) + " index: " + strconv.Itoa(index), nil)
+		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
 		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
 		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ {
@@ -70,9 +71,9 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 				log.Debug("EOF reached, no more records to process", nil)
 				isFinalBatch = true
 				msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
-				log.Debug(strconv.Itoa(batchIndex) + " messages in the final batch.", nil)
+				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
 				totalRows = ((batchNumber - 1) * batchSize) + batchIndex
-				log.Debug(strconv.Itoa(totalRows) + " messages in total.", nil)
+				log.Debug(strconv.Itoa(totalRows)+" messages in total.", nil)
 				sendDatasetSplitEvent(datasetID, totalRows)
 			} else {
 				producerMsg := createMessage(scanner.Text(), index, event, startTime, datasetID)
@@ -99,8 +100,8 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 func sendDatasetSplitEvent(datasetID string, totalRows int) {
 
 	message := DatasetSplitEvent{
-		DatasetID:datasetID,
-		TotalRows:totalRows,
+		DatasetID: datasetID,
+		TotalRows: totalRows,
 		SplitTime: time.Now().UTC().Unix(),
 	}
 

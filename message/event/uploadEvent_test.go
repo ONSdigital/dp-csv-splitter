@@ -1,11 +1,12 @@
 package event
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net/url"
 	"strings"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 const bucketName = "csv-bucket"

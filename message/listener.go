@@ -2,13 +2,14 @@ package message
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/Shopify/sarama"
 	"github.com/satori/go.uuid"
-	"time"
 )
 
 func ConsumerLoop(listener Listener, awsService aws.AWSService, processor splitter.CSVProcessor) {
