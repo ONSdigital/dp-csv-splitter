@@ -1,9 +1,10 @@
 package event
 
 import (
-	"github.com/ONSdigital/go-ns/log"
 	"net/url"
 	"strings"
+
+	"github.com/ONSdigital/go-ns/log"
 )
 
 // FileUploaded event
@@ -21,8 +22,8 @@ func NewS3URL(s3url *url.URL) *S3URLType {
 }
 
 func (x *S3URLType) UnmarshalJSON(b []byte) (err error) {
-	if b[0] == '"' && b[len(b) - 1] == '"' {
-		b = b[1 : len(b) - 1]
+	if b[0] == '"' && b[len(b)-1] == '"' {
+		b = b[1 : len(b)-1]
 	}
 	url, err := url.Parse(string(b))
 	if err != nil {

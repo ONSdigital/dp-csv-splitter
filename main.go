@@ -1,6 +1,10 @@
 package main
 
 import (
+	"net/http"
+	"os"
+	"os/signal"
+
 	"github.com/ONSdigital/dp-csv-splitter/aws"
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/message"
@@ -9,9 +13,6 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/bsm/sarama-cluster"
 	"github.com/gorilla/pat"
-	"net/http"
-	"os"
-	"os/signal"
 )
 
 func main() {
