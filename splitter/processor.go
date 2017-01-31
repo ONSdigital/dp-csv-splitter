@@ -102,7 +102,7 @@ func sendDatasetSplitEvent(datasetID string, totalRows int) {
 	message := DatasetSplitEvent{
 		DatasetID: datasetID,
 		TotalRows: totalRows,
-		SplitTime: time.Now().UTC().Unix(),
+		SplitTime: time.Now().UTC().Unix() * 1000, // unix time in milliseconds
 	}
 
 	messageJSON, err := json.Marshal(message)
