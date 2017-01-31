@@ -39,7 +39,6 @@ type RowMessage struct {
 type DatasetSplitEvent struct {
 	DatasetID     string `json:"datasetID"`
 	TotalRows     int    `json:"totalRows"`
-	RowsProcessed int    `json:"rowsProcessed"`
 	SplitTime     int64  `json:"lastUpdate"`
 }
 
