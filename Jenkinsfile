@@ -46,7 +46,7 @@ node {
             def appName = 'dp-csv-splitter'
             for (group in deploymentGroups) {
                 sh sprintf('aws deploy create-deployment %s %s %s,bundleType=tgz,key=%s', [
-                    '--application-name ${appName}',
+                    "--application-name ${appName}",
                     "--deployment-group-name ${group}",
                     "--s3-location bucket=${env.S3_REVISIONS_BUCKET}",
                     "${appName}-${revision}.tar.gz",
