@@ -40,7 +40,7 @@ node {
         }
 
         def deploymentGroups = deploymentGroupsFor(env.JOB_NAME.replaceFirst('.+/', ''))
-        if (deploymentGroups.size() <1) return
+        if (deploymentGroups.size() < 1) return
 
         stage('Deploy') {
             def appName = 'dp-csv-splitter'
@@ -61,7 +61,7 @@ def deploymentGroupsFor(branch) {
         return [env.CODEDEPLOY_DISCOVERY_PUBLISHING_DEPLOYMENT_GROUP]
     }
     if (branch == 'dd-master') {
-        return [CODEDEPLOY_DISCOVERY_ALPHA_PUBLISHING_DEPLOYMENT_GROUP]
+        return [env.CODEDEPLOY_DISCOVERY_ALPHA_PUBLISHING_DEPLOYMENT_GROUP]
     }
     return []
 }
