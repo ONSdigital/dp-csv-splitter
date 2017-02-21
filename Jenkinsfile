@@ -57,7 +57,7 @@ node {
 }
 
 def deploymentGroupsFor(branch) {
-    if {branch == 'develop'} {
+    if (branch == 'develop') {
         return [env.CODEDEPLOY_DISCOVERY_PUBLISHING_DEPLOYMENT_GROUP]
     }
     if (branch == 'dd-master') {
