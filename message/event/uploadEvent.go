@@ -25,13 +25,23 @@ func (x *S3URLType) UnmarshalJSON(b []byte) (err error) {
 	if b[0] == '"' && b[len(b)-1] == '"' {
 		b = b[1 : len(b)-1]
 	}
-	url, err := url.Parse(string(b))
+	bString := string(b)
+	url, err := url.Parse(bString)
 	if err != nil {
-		log.Error(err, log.Data{"Details": "Failed to unmarshal value to S3URLType"})
+		log.Error(err, log.Data{"Details": "Failed to unmarshal value to S3URLType: " + bString})
 		return err
 	}
 	x.URL = url
 	return nil
+}
+
+func (x *S3URLType) MarshalJSON() ([]byte, error) {
+	urlString := "\"" + x.URL.String() + "\""
+	return []byte(urlString), nil
+}
+
+func (x *S3URLType) String() string {
+	return x.URL.String()
 }
 
 func (d *FileUploaded) GetBucketName() string {
