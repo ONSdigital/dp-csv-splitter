@@ -53,26 +53,26 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 
 	// Scan and discard header row (for now) - the data rows contain sufficient information about the structure
 	if !scanner.Scan() && scanner.Err() == io.EOF {
-		log.Debug("Encountered EOF immediately when processing header row", nil)
+		log.DebugC(datasetID,"Encountered EOF immediately when processing header row", nil)
 		return
 	}
 
 	for !isFinalBatch {
 		// each batch
 
-		log.Debug("Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
+		log.DebugC(datasetID, "Processing batch number "+strconv.Itoa(batchNumber)+" index: "+strconv.Itoa(index), nil)
 		var msgs []*sarama.ProducerMessage = make([]*sarama.ProducerMessage, batchSize)
 
 		for batchIndex := 0; batchIndex < batchSize && !isFinalBatch; batchIndex++ {
 			// each row in the batch
 			scanSuccessful := scanner.Scan()
 			if !scanSuccessful {
-				log.Debug("EOF reached, no more records to process", nil)
+				log.DebugC(datasetID, "EOF reached, no more records to process", nil)
 				isFinalBatch = true
 				msgs = msgs[0:batchIndex] // the last batch is smaller than batch size, so resize the slice.
 				log.Debug(strconv.Itoa(batchIndex)+" messages in the final batch.", nil)
 				totalRows = ((batchNumber - 1) * batchSize) + batchIndex
-				log.Debug(strconv.Itoa(totalRows)+" messages in total.", nil)
+				log.DebugC(datasetID, strconv.Itoa(totalRows)+" messages in total.", nil)
 				sendDatasetSplitEvent(datasetID, totalRows)
 			} else {
 				producerMsg := createMessage(scanner.Text(), index, event, startTime, datasetID)
@@ -83,7 +83,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 
 		err := Producer.SendMessages(msgs)
 		if err != nil {
-			log.Error(err, log.Data{
+			log.ErrorC(datasetID, err, log.Data{
 				"details": "Failed to add messages to Kafka",
 			})
 		}
@@ -91,7 +91,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 		batchNumber++
 	}
 
-	log.Debug("Kafka Loop details", log.Data{
+	log.DebugC(datasetID, "Kafka Loop details", log.Data{
 		"Enqueued": index,
 	})
 }
