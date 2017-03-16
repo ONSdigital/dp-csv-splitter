@@ -1,4 +1,4 @@
-package aws
+package ons_aws
 
 import (
 	"io"
@@ -13,7 +13,7 @@ import (
 
 // AWSClient interface defining the AWS client.
 type AWSService interface {
-	GetCSV(event *event.FileUploaded) (io.Reader, error)
+	GetCSV(event *event.FileUploaded) (io.ReadCloser, error)
 }
 
 // Client AWS client implementation.
@@ -25,7 +25,7 @@ func NewService() AWSService {
 }
 
 // GetFile get the requested file from AWS.
-func (cli *Service) GetCSV(event *event.FileUploaded) (io.Reader, error) {
+func (cli *Service) GetCSV(event *event.FileUploaded) (io.ReadCloser, error) {
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String(config.AWSRegion),
 	})
