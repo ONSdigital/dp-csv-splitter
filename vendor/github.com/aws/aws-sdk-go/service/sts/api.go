@@ -12,7 +12,7 @@ import (
 
 const opAssumeRole = "AssumeRole"
 
-// AssumeRoleRequest generates a "ons_aws/request.Request" representing the
+// AssumeRoleRequest generates a "aws/request.Request" representing the
 // client's request for the AssumeRole operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -135,7 +135,7 @@ func (c *STS) AssumeRoleRequest(input *AssumeRoleInput) (req *request.Request, o
 // denied. The condition in a trust policy that tests for MFA authentication
 // might look like the following example.
 //
-// "Condition": {"Bool": {"ons_aws:MultiFactorAuthPresent": true}}
+// "Condition": {"Bool": {"aws:MultiFactorAuthPresent": true}}
 //
 // For more information, see Configuring MFA-Protected API Access (http://docs.aws.amazon.com/IAM/latest/UserGuide/MFAProtectedAPI.html)
 // in the IAM User Guide guide.
@@ -177,7 +177,7 @@ func (c *STS) AssumeRole(input *AssumeRoleInput) (*AssumeRoleOutput, error) {
 
 const opAssumeRoleWithSAML = "AssumeRoleWithSAML"
 
-// AssumeRoleWithSAMLRequest generates a "ons_aws/request.Request" representing the
+// AssumeRoleWithSAMLRequest generates a "aws/request.Request" representing the
 // client's request for the AssumeRoleWithSAML operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -335,7 +335,7 @@ func (c *STS) AssumeRoleWithSAML(input *AssumeRoleWithSAMLInput) (*AssumeRoleWit
 
 const opAssumeRoleWithWebIdentity = "AssumeRoleWithWebIdentity"
 
-// AssumeRoleWithWebIdentityRequest generates a "ons_aws/request.Request" representing the
+// AssumeRoleWithWebIdentityRequest generates a "aws/request.Request" representing the
 // client's request for the AssumeRoleWithWebIdentity operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -522,7 +522,7 @@ func (c *STS) AssumeRoleWithWebIdentity(input *AssumeRoleWithWebIdentityInput) (
 
 const opDecodeAuthorizationMessage = "DecodeAuthorizationMessage"
 
-// DecodeAuthorizationMessageRequest generates a "ons_aws/request.Request" representing the
+// DecodeAuthorizationMessageRequest generates a "aws/request.Request" representing the
 // client's request for the DecodeAuthorizationMessage operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -619,7 +619,7 @@ func (c *STS) DecodeAuthorizationMessage(input *DecodeAuthorizationMessageInput)
 
 const opGetCallerIdentity = "GetCallerIdentity"
 
-// GetCallerIdentityRequest generates a "ons_aws/request.Request" representing the
+// GetCallerIdentityRequest generates a "aws/request.Request" representing the
 // client's request for the GetCallerIdentity operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -679,7 +679,7 @@ func (c *STS) GetCallerIdentity(input *GetCallerIdentityInput) (*GetCallerIdenti
 
 const opGetFederationToken = "GetFederationToken"
 
-// GetFederationTokenRequest generates a "ons_aws/request.Request" representing the
+// GetFederationTokenRequest generates a "aws/request.Request" representing the
 // client's request for the GetFederationToken operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -833,7 +833,7 @@ func (c *STS) GetFederationToken(input *GetFederationTokenInput) (*GetFederation
 
 const opGetSessionToken = "GetSessionToken"
 
-// GetSessionTokenRequest generates a "ons_aws/request.Request" representing the
+// GetSessionTokenRequest generates a "aws/request.Request" representing the
 // client's request for the GetSessionToken operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1029,7 +1029,7 @@ type AssumeRoleInput struct {
 	// who is making the AssumeRole call. Specify this value if the trust policy
 	// of the role being assumed includes a condition that requires MFA authentication.
 	// The value is either the serial number for a hardware device (such as GAHT12345678)
-	// or an Amazon Resource Name (ARN) for a virtual device (such as arn:ons_aws:iam::123456789012:mfa/user).
+	// or an Amazon Resource Name (ARN) for a virtual device (such as arn:aws:iam::123456789012:mfa/user).
 	//
 	// The format for this parameter, as described by its regex pattern, is a string
 	// of characters consisting of upper- and lower-case alphanumeric characters
@@ -1933,7 +1933,7 @@ type GetCallerIdentityOutput struct {
 
 	// The unique identifier of the calling entity. The exact value depends on the
 	// type of entity making the call. The values returned are those listed in the
-	// ons_aws:userid column in the Principal table (http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html#principaltable)
+	// aws:userid column in the Principal table (http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html#principaltable)
 	// found on the Policy Variables reference page in the IAM User Guide.
 	UserId *string `type:"string"`
 }
@@ -2088,7 +2088,7 @@ type GetFederationTokenOutput struct {
 	Credentials *Credentials `type:"structure"`
 
 	// Identifiers for the federated user associated with the credentials (such
-	// as arn:ons_aws:sts::123456789012:federated-user/Bob or 123456789012:Bob). You
+	// as arn:aws:sts::123456789012:federated-user/Bob or 123456789012:Bob). You
 	// can use the federated user's ARN in your resource-based policies, such as
 	// an Amazon S3 bucket policy.
 	FederatedUser *FederatedUser `type:"structure"`
@@ -2142,7 +2142,7 @@ type GetSessionTokenInput struct {
 	// user who is making the GetSessionToken call. Specify this value if the IAM
 	// user has a policy that requires MFA authentication. The value is either the
 	// serial number for a hardware device (such as GAHT12345678) or an Amazon Resource
-	// Name (ARN) for a virtual device (such as arn:ons_aws:iam::123456789012:mfa/user).
+	// Name (ARN) for a virtual device (such as arn:aws:iam::123456789012:mfa/user).
 	// You can find the device for an IAM user by going to the AWS Management Console
 	// and viewing the user's security credentials.
 	//

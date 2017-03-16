@@ -73,14 +73,14 @@ const ServiceName = "sts"
 
 // New creates a new instance of the STS client with a session.
 // If additional configuration is needed for the client instance use the optional
-// ons_aws.Config parameter to add your extra config.
+// aws.Config parameter to add your extra config.
 //
 // Example:
 //     // Create a STS client from just a session.
 //     svc := sts.New(mySession)
 //
 //     // Create a STS client with additional configuration
-//     svc := sts.New(mySession, ons_aws.NewConfig().WithRegion("us-west-2"))
+//     svc := sts.New(mySession, aws.NewConfig().WithRegion("us-west-2"))
 func New(p client.ConfigProvider, cfgs ...*aws.Config) *STS {
 	c := p.ClientConfig(ServiceName, cfgs...)
 	return newClient(*c.Config, c.Handlers, c.Endpoint, c.SigningRegion)

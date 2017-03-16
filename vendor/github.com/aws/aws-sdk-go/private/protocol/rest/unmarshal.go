@@ -72,7 +72,7 @@ func unmarshalBody(r *request.Request, v reflect.Value) {
 						switch payload.Type().String() {
 						case "io.ReadSeeker":
 							payload.Set(reflect.ValueOf(aws.ReadSeekCloser(r.HTTPResponse.Body)))
-						case "ons_aws.ReadSeekCloser", "io.ReadCloser":
+						case "aws.ReadSeekCloser", "io.ReadCloser":
 							payload.Set(reflect.ValueOf(r.HTTPResponse.Body))
 						default:
 							io.Copy(ioutil.Discard, r.HTTPResponse.Body)

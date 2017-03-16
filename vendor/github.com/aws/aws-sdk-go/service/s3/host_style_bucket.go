@@ -42,7 +42,7 @@ func updateEndpointForS3Config(r *request.Request) {
 	if accelerate && accelerateOpBlacklist.Continue(r) {
 		if forceHostStyle {
 			if r.Config.Logger != nil {
-				r.Config.Logger.Log("ERROR: ons_aws.Config.S3UseAccelerate is not compatible with ons_aws.Config.S3ForcePathStyle, ignoring S3ForcePathStyle.")
+				r.Config.Logger.Log("ERROR: aws.Config.S3UseAccelerate is not compatible with aws.Config.S3ForcePathStyle, ignoring S3ForcePathStyle.")
 			}
 		}
 		updateEndpointForAccelerate(r)

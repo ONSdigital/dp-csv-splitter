@@ -29,14 +29,14 @@ const ServiceName = "s3"
 
 // New creates a new instance of the S3 client with a session.
 // If additional configuration is needed for the client instance use the optional
-// ons_aws.Config parameter to add your extra config.
+// aws.Config parameter to add your extra config.
 //
 // Example:
 //     // Create a S3 client from just a session.
 //     svc := s3.New(mySession)
 //
 //     // Create a S3 client with additional configuration
-//     svc := s3.New(mySession, ons_aws.NewConfig().WithRegion("us-west-2"))
+//     svc := s3.New(mySession, aws.NewConfig().WithRegion("us-west-2"))
 func New(p client.ConfigProvider, cfgs ...*aws.Config) *S3 {
 	c := p.ClientConfig(ServiceName, cfgs...)
 	return newClient(*c.Config, c.Handlers, c.Endpoint, c.SigningRegion)

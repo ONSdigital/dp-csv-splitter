@@ -2,7 +2,7 @@
 package aws
 
 // SDKName is the name of this AWS SDK
-const SDKName = "ons_aws-sdk-go"
+const SDKName = "aws-sdk-go"
 
 // SDKVersion is the version of this SDK
 const SDKVersion = "1.5.13"

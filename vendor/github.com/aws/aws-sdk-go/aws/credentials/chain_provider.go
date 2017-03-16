@@ -9,12 +9,12 @@ var (
 	// providers in the ChainProvider.
 	//
 	// This has been deprecated. For verbose error messaging set
-	// ons_aws.Config.CredentialsChainVerboseErrors to true
+	// aws.Config.CredentialsChainVerboseErrors to true
 	//
 	// @readonly
 	ErrNoValidProvidersFoundInChain = awserr.New("NoCredentialProviders",
 		`no valid providers in chain. Deprecated. 
-	For verbose messaging see ons_aws.Config.CredentialsChainVerboseErrors`,
+	For verbose messaging see aws.Config.CredentialsChainVerboseErrors`,
 		nil)
 )
 
@@ -47,8 +47,8 @@ var (
 //             },
 //         })
 //
-//     // Usage of ChainCredentials with ons_aws.Config
-//     svc := ec2.New(&ons_aws.Config{Credentials: creds})
+//     // Usage of ChainCredentials with aws.Config
+//     svc := ec2.New(&aws.Config{Credentials: creds})
 //
 type ChainProvider struct {
 	Providers     []Provider

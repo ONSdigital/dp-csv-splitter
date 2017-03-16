@@ -26,7 +26,7 @@ const ProviderName = "EC2RoleProvider"
 //     p := &ec2rolecreds.EC2RoleProvider{
 //         // Pass in a custom timeout to be used when requesting
 //         // IAM EC2 Role credentials.
-//         Client: ec2metadata.New(sess, ons_aws.Config{
+//         Client: ec2metadata.New(sess, aws.Config{
 //             HTTPClient: &http.Client{Timeout: 10 * time.Second},
 //         }),
 //
