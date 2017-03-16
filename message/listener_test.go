@@ -14,6 +14,7 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
 	. "github.com/smartystreets/goconvey/convey"
+	"io/ioutil"
 )
 
 var messagesProcessed = 0
@@ -59,9 +60,9 @@ var exampleCsvLine string = "153223,,Person,,Count,,,,,,,,,,K04000001,,,,,,,,,,,
 
 type mockAwsService struct{}
 
-func (awsService *mockAwsService) GetCSV(event *event.FileUploaded) (io.Reader, error) {
+func (awsService *mockAwsService) GetCSV(event *event.FileUploaded) (io.ReadCloser, error) {
 	reader := strings.NewReader(exampleHeaderLine + exampleCsvLine)
-	return reader, nil
+	return ioutil.NopCloser(reader), nil
 }
 
 type mockProcessor struct{}

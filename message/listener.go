@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/ONSdigital/dp-csv-splitter/aws"
+	"github.com/ONSdigital/dp-csv-splitter/ons_aws"
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
 	"github.com/ONSdigital/go-ns/log"
@@ -12,14 +12,14 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func ConsumerLoop(listener Listener, awsService aws.AWSService, processor splitter.CSVProcessor) {
+func ConsumerLoop(listener Listener, awsService ons_aws.AWSService, processor splitter.CSVProcessor) {
 	for message := range listener.Messages() {
 		log.Debug("Message received from Kafka!", nil)
 		processMessage(message, awsService, processor)
 	}
 }
 
-func processMessage(message *sarama.ConsumerMessage, awsService aws.AWSService, csvProcessor splitter.CSVProcessor) error {
+func processMessage(message *sarama.ConsumerMessage, awsService ons_aws.AWSService, csvProcessor splitter.CSVProcessor) error {
 
 	var event event.FileUploaded
 	if err := json.Unmarshal(message.Value, &event); err != nil {
@@ -29,14 +29,15 @@ func processMessage(message *sarama.ConsumerMessage, awsService aws.AWSService, 
 
 	log.Debug("Processing uploadEvent message", log.Data{"url": event.GetURL()})
 
-	awsReader, err := awsService.GetCSV(&event)
+	awsReadCloser, err := awsService.GetCSV(&event)
+	defer awsReadCloser.Close()
 	if err != nil {
 		log.Error(err, log.Data{"message": "Error while attempting get to get from from AWS s3 bucket."})
 		return err
 	}
 
 	datasetId := uuid.NewV4().String()
-	csvProcessor.Process(awsReader, &event, time.Now(), datasetId)
+	csvProcessor.Process(awsReadCloser, &event, time.Now(), datasetId)
 	return nil
 }
 

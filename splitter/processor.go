@@ -37,9 +37,9 @@ type RowMessage struct {
 }
 
 type DatasetSplitEvent struct {
-	DatasetID     string `json:"datasetID"`
-	TotalRows     int    `json:"totalRows"`
-	SplitTime     int64  `json:"lastUpdate"`
+	DatasetID string `json:"datasetID"`
+	TotalRows int    `json:"totalRows"`
+	SplitTime int64  `json:"lastUpdate"`
 }
 
 func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime time.Time, datasetID string) {
@@ -53,7 +53,7 @@ func (p *Processor) Process(r io.Reader, event *event.FileUploaded, startTime ti
 
 	// Scan and discard header row (for now) - the data rows contain sufficient information about the structure
 	if !scanner.Scan() && scanner.Err() == io.EOF {
-		log.DebugC(datasetID,"Encountered EOF immediately when processing header row", nil)
+		log.DebugC(datasetID, "Encountered EOF immediately when processing header row", nil)
 		return
 	}
 
