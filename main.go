@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/ONSdigital/dp-csv-splitter/aws"
+	"github.com/ONSdigital/dp-csv-splitter/ons_aws"
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/message"
 	"github.com/ONSdigital/dp-csv-splitter/splitter"
@@ -34,7 +34,7 @@ func main() {
 	}
 
 	splitter.Producer = producer
-	awsService := aws.NewService()
+	awsService := ons_aws.NewService()
 	csvProcessor := splitter.NewCSVProcessor()
 
 	go func() {
