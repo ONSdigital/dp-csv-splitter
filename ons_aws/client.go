@@ -24,7 +24,7 @@ func NewService() AWSService {
 	return &Service{}
 }
 
-// GetFile get the requested file from AWS.
+// GetFile get the requested file from AWS. The caller is responsible for closing.
 func (cli *Service) GetCSV(event *event.FileUploaded) (io.ReadCloser, error) {
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String(config.AWSRegion),

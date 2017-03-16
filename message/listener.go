@@ -29,16 +29,15 @@ func processMessage(message *sarama.ConsumerMessage, awsService ons_aws.AWSServi
 
 	log.Debug("Processing uploadEvent message", log.Data{"url": event.GetURL()})
 
-	awsReader, err := awsService.GetCSV(&event)
+	awsReadCloser, err := awsService.GetCSV(&event)
+	defer awsReadCloser.Close()
 	if err != nil {
 		log.Error(err, log.Data{"message": "Error while attempting get to get from from AWS s3 bucket."})
 		return err
 	}
 
-	defer awsReader.Close()
-
 	datasetId := uuid.NewV4().String()
-	csvProcessor.Process(awsReader, &event, time.Now(), datasetId)
+	csvProcessor.Process(awsReadCloser, &event, time.Now(), datasetId)
 	return nil
 }
 
