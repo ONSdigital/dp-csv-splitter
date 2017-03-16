@@ -1,9 +1,7 @@
-package aws
+package ons_aws
 
 import (
-	"bytes"
 	"io"
-	"io/ioutil"
 
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
@@ -15,7 +13,7 @@ import (
 
 // AWSClient interface defining the AWS client.
 type AWSService interface {
-	GetCSV(event *event.FileUploaded) (io.Reader, error)
+	GetCSV(event *event.FileUploaded) (io.ReadCloser, error)
 }
 
 // Client AWS client implementation.
@@ -26,8 +24,8 @@ func NewService() AWSService {
 	return &Service{}
 }
 
-// GetFile get the requested file from AWS.
-func (cli *Service) GetCSV(event *event.FileUploaded) (io.Reader, error) {
+// GetFile get the requested file from AWS. The caller is responsible for closing.
+func (cli *Service) GetCSV(event *event.FileUploaded) (io.ReadCloser, error) {
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String(config.AWSRegion),
 	})
@@ -54,13 +52,5 @@ func (cli *Service) GetCSV(event *event.FileUploaded) (io.Reader, error) {
 		return nil, err
 	}
 
-	b, err := ioutil.ReadAll(result.Body)
-	defer result.Body.Close()
-
-	if err != nil {
-		log.Error(err, nil)
-		return nil, err
-	}
-
-	return bytes.NewReader(b), nil
+	return result.Body, nil
 }
