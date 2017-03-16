@@ -1,9 +1,7 @@
 package aws
 
 import (
-	"bytes"
 	"io"
-	"io/ioutil"
 
 	"github.com/ONSdigital/dp-csv-splitter/config"
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
@@ -54,13 +52,5 @@ func (cli *Service) GetCSV(event *event.FileUploaded) (io.Reader, error) {
 		return nil, err
 	}
 
-	b, err := ioutil.ReadAll(result.Body)
-	defer result.Body.Close()
-
-	if err != nil {
-		log.Error(err, nil)
-		return nil, err
-	}
-
-	return bytes.NewReader(b), nil
+	return result.Body, nil
 }
