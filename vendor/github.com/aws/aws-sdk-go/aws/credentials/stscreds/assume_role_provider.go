@@ -58,7 +58,7 @@ type AssumeRoleProvider struct {
 	// who is making the AssumeRole call. Specify this value if the trust policy
 	// of the role being assumed includes a condition that requires MFA authentication.
 	// The value is either the serial number for a hardware device (such as GAHT12345678)
-	// or an Amazon Resource Name (ARN) for a virtual device (such as arn:aws:iam::123456789012:mfa/user).
+	// or an Amazon Resource Name (ARN) for a virtual device (such as arn:ons_aws:iam::123456789012:mfa/user).
 	SerialNumber *string
 
 	// The value provided by the MFA device, if the trust policy of the role being

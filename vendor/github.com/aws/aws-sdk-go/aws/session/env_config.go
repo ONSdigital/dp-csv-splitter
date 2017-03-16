@@ -62,16 +62,16 @@ type envConfig struct {
 
 	// Shared credentials file path can be set to instruct the SDK to use an alternate
 	// file for the shared credentials. If not set the file will be loaded from
-	// $HOME/.aws/credentials on Linux/Unix based systems, and
-	// %USERPROFILE%\.aws\credentials on Windows.
+	// $HOME/.ons_aws/credentials on Linux/Unix based systems, and
+	// %USERPROFILE%\.ons_aws\credentials on Windows.
 	//
 	//	AWS_SHARED_CREDENTIALS_FILE=$HOME/my_shared_credentials
 	SharedCredentialsFile string
 
 	// Shared config file path can be set to instruct the SDK to use an alternate
 	// file for the shared config. If not set the file will be loaded from
-	// $HOME/.aws/config on Linux/Unix based systems, and
-	// %USERPROFILE%\.aws\config on Windows.
+	// $HOME/.ons_aws/config on Linux/Unix based systems, and
+	// %USERPROFILE%\.ons_aws\config on Windows.
 	//
 	//	AWS_CONFIG_FILE=$HOME/my_shared_config
 	SharedConfigFile string
@@ -167,7 +167,7 @@ func sharedCredentialsFilename() string {
 		return name
 	}
 
-	return filepath.Join(userHomeDir(), ".aws", "credentials")
+	return filepath.Join(userHomeDir(), ".ons_aws", "credentials")
 }
 
 func sharedConfigFilename() string {
@@ -175,7 +175,7 @@ func sharedConfigFilename() string {
 		return name
 	}
 
-	return filepath.Join(userHomeDir(), ".aws", "config")
+	return filepath.Join(userHomeDir(), ".ons_aws", "config")
 }
 
 func userHomeDir() string {

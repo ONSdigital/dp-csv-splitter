@@ -39,8 +39,8 @@ type Session struct {
 // session.
 //
 // If the AWS_SDK_LOAD_CONFIG environment variable is set to a truthy value
-// the shared config file (~/.aws/config) will also be loaded, in addition to
-// the shared credentials file (~/.aws/config). Values set in both the
+// the shared config file (~/.ons_aws/config) will also be loaded, in addition to
+// the shared credentials file (~/.ons_aws/config). Values set in both the
 // shared config, and shared credentials will be taken from the shared
 // credentials file.
 //
@@ -82,8 +82,8 @@ func New(cfgs ...*aws.Config) *Session {
 // be read concurrently, but it should not be written to concurrently.
 //
 // If the AWS_SDK_LOAD_CONFIG environment variable is set to a truthy value
-// the shared config file (~/.aws/config) will also be loaded in addition to
-// the shared credentials file (~/.aws/config). Values set in both the
+// the shared config file (~/.ons_aws/config) will also be loaded in addition to
+// the shared credentials file (~/.ons_aws/config). Values set in both the
 // shared config, and shared credentials will be taken from the shared
 // credentials file. Enabling the Shared Config will also allow the Session
 // to be built with retrieving credentials with AssumeRole set in the config.
@@ -154,8 +154,8 @@ type Options struct {
 // values to configure how the Session is created.
 //
 // If the AWS_SDK_LOAD_CONFIG environment variable is set to a truthy value
-// the shared config file (~/.aws/config) will also be loaded in addition to
-// the shared credentials file (~/.aws/config). Values set in both the
+// the shared config file (~/.ons_aws/config) will also be loaded in addition to
+// the shared credentials file (~/.ons_aws/config). Values set in both the
 // shared config, and shared credentials will be taken from the shared
 // credentials file. Enabling the Shared Config will also allow the Session
 // to be built with retrieving credentials with AssumeRole set in the config.
@@ -170,7 +170,7 @@ type Options struct {
 //
 //     // Specify profile for config and region for requests
 //     sess, err := session.NewSessionWithOptions(session.Options{
-//          Config: aws.Config{Region: aws.String("us-east-1")},
+//          Config: ons_aws.Config{Region: ons_aws.String("us-east-1")},
 //          Profile: "profile_name",
 //     })
 //
@@ -250,7 +250,7 @@ func newSession(envCfg envConfig, cfgs ...*aws.Config) (*Session, error) {
 	// previous config file values.
 	cfgFiles := []string{envCfg.SharedConfigFile, envCfg.SharedCredentialsFile}
 	if !envCfg.EnableSharedConfig {
-		// The shared config file (~/.aws/config) is only loaded if instructed
+		// The shared config file (~/.ons_aws/config) is only loaded if instructed
 		// to load via the envConfig.EnableSharedConfig (AWS_SDK_LOAD_CONFIG).
 		cfgFiles = cfgFiles[1:]
 	}
@@ -359,7 +359,7 @@ func initHandlers(s *Session) {
 // on top of the Session's copied config.
 //
 //     // Create a copy of the current Session, configured for the us-west-2 region.
-//     sess.Copy(&aws.Config{Region: aws.String("us-west-2")})
+//     sess.Copy(&ons_aws.Config{Region: ons_aws.String("us-west-2")})
 func (s *Session) Copy(cfgs ...*aws.Config) *Session {
 	newSession := &Session{
 		Config:   s.Config.Copy(cfgs...),

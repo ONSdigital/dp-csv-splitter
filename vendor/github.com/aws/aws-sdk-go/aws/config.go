@@ -21,13 +21,13 @@ type RequestRetryer interface{}
 //
 //     // Create Session with MaxRetry configuration to be shared by multiple
 //     // service clients.
-//     sess, err := session.NewSession(&aws.Config{
-//         MaxRetries: aws.Int(3),
+//     sess, err := session.NewSession(&ons_aws.Config{
+//         MaxRetries: ons_aws.Int(3),
 //     })
 //
 //     // Create S3 service client with a specific Region.
-//     svc := s3.New(sess, &aws.Config{
-//         Region: aws.String("us-west-2"),
+//     svc := s3.New(sess, &ons_aws.Config{
+//         Region: ons_aws.String("us-west-2"),
 //     })
 type Config struct {
 	// Enables verbose error printing of all credential chain errors.
@@ -91,7 +91,7 @@ type Config struct {
 	// To set the Retryer field in a type-safe manner and with chaining, use
 	// the request.WithRetryer helper function:
 	//
-	//   cfg := request.WithRetryer(aws.NewConfig(), myRetryer)
+	//   cfg := request.WithRetryer(ons_aws.NewConfig(), myRetryer)
 	//
 	Retryer RequestRetryer
 
@@ -149,7 +149,7 @@ type Config struct {
 	// the EC2Metadata overriding the timeout for default credentials chain.
 	//
 	// Example:
-	//    sess, err := session.NewSession(aws.NewConfig().WithEC2MetadataDiableTimeoutOverride(true))
+	//    sess, err := session.NewSession(ons_aws.NewConfig().WithEC2MetadataDiableTimeoutOverride(true))
 	//
 	//    svc := s3.New(sess)
 	//
@@ -171,28 +171,28 @@ type Config struct {
 	//
 	//     sess, err := session.NewSession()
 	//
-	//     svc := s3.New(sess, &aws.Config{
-	//         UseDualStack: aws.Bool(true),
+	//     svc := s3.New(sess, &ons_aws.Config{
+	//         UseDualStack: ons_aws.Bool(true),
 	//     })
 	UseDualStack *bool
 
 	// SleepDelay is an override for the func the SDK will call when sleeping
 	// during the lifecycle of a request. Specifically this will be used for
 	// request delays. This value should only be used for testing. To adjust
-	// the delay of a request see the aws/client.DefaultRetryer and
-	// aws/request.Retryer.
+	// the delay of a request see the ons_aws/client.DefaultRetryer and
+	// ons_aws/request.Retryer.
 	SleepDelay func(time.Duration)
 
 	// DisableRestProtocolURICleaning will not clean the URL path when making rest protocol requests.
 	// Will default to false. This would only be used for empty directory names in s3 requests.
 	//
 	// Example:
-	//    sess, err := session.NewSession(&aws.Config{DisableRestProtocolURICleaning: aws.Bool(true))
+	//    sess, err := session.NewSession(&ons_aws.Config{DisableRestProtocolURICleaning: ons_aws.Bool(true))
 	//
 	//    svc := s3.New(sess)
 	//    out, err := svc.GetObject(&s3.GetObjectInput {
-	//    	Bucket: aws.String("bucketname"),
-	//    	Key: aws.String("//foo//bar//moo"),
+	//    	Bucket: ons_aws.String("bucketname"),
+	//    	Key: ons_aws.String("//foo//bar//moo"),
 	//    })
 	DisableRestProtocolURICleaning *bool
 }
@@ -202,12 +202,12 @@ type Config struct {
 //
 //     // Create Session with MaxRetry configuration to be shared by multiple
 //     // service clients.
-//     sess, err := session.NewSession(aws.NewConfig().
+//     sess, err := session.NewSession(ons_aws.NewConfig().
 //         WithMaxRetries(3),
 //     )
 //
 //     // Create S3 service client with a specific Region.
-//     svc := s3.New(sess, aws.NewConfig().
+//     svc := s3.New(sess, ons_aws.NewConfig().
 //         WithRegion("us-west-2"),
 //     )
 func NewConfig() *Config {

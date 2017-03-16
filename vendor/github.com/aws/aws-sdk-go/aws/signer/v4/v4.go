@@ -147,7 +147,7 @@ type Signer struct {
 
 	// Sets the log level the signer should use when reporting information to
 	// the logger. If the logger is nil nothing will be logged. See
-	// aws.LogLevelType for more information on available logging levels
+	// ons_aws.LogLevelType for more information on available logging levels
 	//
 	// By default nothing will be logged.
 	Debug aws.LogLevelType

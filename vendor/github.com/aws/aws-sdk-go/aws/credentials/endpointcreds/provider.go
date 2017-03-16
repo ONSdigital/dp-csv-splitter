@@ -51,7 +51,7 @@ type Provider struct {
 	credentials.Expiry
 
 	// Requires a AWS Client to make HTTP requests to the endpoint with.
-	// the Endpoint the request will be made to is provided by the aws.Config's
+	// the Endpoint the request will be made to is provided by the ons_aws.Config's
 	// Endpoint value.
 	Client *client.Client
 

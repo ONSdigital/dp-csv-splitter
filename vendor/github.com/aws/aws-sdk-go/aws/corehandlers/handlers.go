@@ -87,7 +87,7 @@ var ValidateReqSigHandler = request.NamedHandler{
 		}
 
 		// 10 minutes to allow for some clock skew/delays in transmission.
-		// Would be improved with aws/aws-sdk-go#423
+		// Would be improved with ons_aws/ons_aws-sdk-go#423
 		if signedTime.Add(10 * time.Minute).After(time.Now()) {
 			return
 		}

@@ -23,14 +23,14 @@ var (
 // A SharedCredentialsProvider retrieves credentials from the current user's home
 // directory, and keeps track if those credentials are expired.
 //
-// Profile ini file example: $HOME/.aws/credentials
+// Profile ini file example: $HOME/.ons_aws/credentials
 type SharedCredentialsProvider struct {
 	// Path to the shared credentials file.
 	//
 	// If empty will look for "AWS_SHARED_CREDENTIALS_FILE" env variable. If the
 	// env value is empty will default to current user's home directory.
-	// Linux/OSX: "$HOME/.aws/credentials"
-	// Windows:   "%USERPROFILE%\.aws\credentials"
+	// Linux/OSX: "$HOME/.ons_aws/credentials"
+	// Windows:   "%USERPROFILE%\.ons_aws\credentials"
 	Filename string
 
 	// AWS Profile to extract credentials from the shared credentials file. If empty
@@ -130,7 +130,7 @@ func (p *SharedCredentialsProvider) filename() (string, error) {
 			return "", ErrSharedCredentialsHomeNotFound
 		}
 
-		p.Filename = filepath.Join(homeDir, ".aws", "credentials")
+		p.Filename = filepath.Join(homeDir, ".ons_aws", "credentials")
 	}
 
 	return p.Filename, nil

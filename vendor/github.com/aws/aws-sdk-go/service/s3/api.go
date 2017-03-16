@@ -16,7 +16,7 @@ import (
 
 const opAbortMultipartUpload = "AbortMultipartUpload"
 
-// AbortMultipartUploadRequest generates a "aws/request.Request" representing the
+// AbortMultipartUploadRequest generates a "ons_aws/request.Request" representing the
 // client's request for the AbortMultipartUpload operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -84,7 +84,7 @@ func (c *S3) AbortMultipartUpload(input *AbortMultipartUploadInput) (*AbortMulti
 
 const opCompleteMultipartUpload = "CompleteMultipartUpload"
 
-// CompleteMultipartUploadRequest generates a "aws/request.Request" representing the
+// CompleteMultipartUploadRequest generates a "ons_aws/request.Request" representing the
 // client's request for the CompleteMultipartUpload operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -143,7 +143,7 @@ func (c *S3) CompleteMultipartUpload(input *CompleteMultipartUploadInput) (*Comp
 
 const opCopyObject = "CopyObject"
 
-// CopyObjectRequest generates a "aws/request.Request" representing the
+// CopyObjectRequest generates a "ons_aws/request.Request" representing the
 // client's request for the CopyObject operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -208,7 +208,7 @@ func (c *S3) CopyObject(input *CopyObjectInput) (*CopyObjectOutput, error) {
 
 const opCreateBucket = "CreateBucket"
 
-// CreateBucketRequest generates a "aws/request.Request" representing the
+// CreateBucketRequest generates a "ons_aws/request.Request" representing the
 // client's request for the CreateBucket operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -276,7 +276,7 @@ func (c *S3) CreateBucket(input *CreateBucketInput) (*CreateBucketOutput, error)
 
 const opCreateMultipartUpload = "CreateMultipartUpload"
 
-// CreateMultipartUploadRequest generates a "aws/request.Request" representing the
+// CreateMultipartUploadRequest generates a "ons_aws/request.Request" representing the
 // client's request for the CreateMultipartUpload operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -341,7 +341,7 @@ func (c *S3) CreateMultipartUpload(input *CreateMultipartUploadInput) (*CreateMu
 
 const opDeleteBucket = "DeleteBucket"
 
-// DeleteBucketRequest generates a "aws/request.Request" representing the
+// DeleteBucketRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucket operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -403,7 +403,7 @@ func (c *S3) DeleteBucket(input *DeleteBucketInput) (*DeleteBucketOutput, error)
 
 const opDeleteBucketAnalyticsConfiguration = "DeleteBucketAnalyticsConfiguration"
 
-// DeleteBucketAnalyticsConfigurationRequest generates a "aws/request.Request" representing the
+// DeleteBucketAnalyticsConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketAnalyticsConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -465,7 +465,7 @@ func (c *S3) DeleteBucketAnalyticsConfiguration(input *DeleteBucketAnalyticsConf
 
 const opDeleteBucketCors = "DeleteBucketCors"
 
-// DeleteBucketCorsRequest generates a "aws/request.Request" representing the
+// DeleteBucketCorsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketCors operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -526,7 +526,7 @@ func (c *S3) DeleteBucketCors(input *DeleteBucketCorsInput) (*DeleteBucketCorsOu
 
 const opDeleteBucketInventoryConfiguration = "DeleteBucketInventoryConfiguration"
 
-// DeleteBucketInventoryConfigurationRequest generates a "aws/request.Request" representing the
+// DeleteBucketInventoryConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketInventoryConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -588,7 +588,7 @@ func (c *S3) DeleteBucketInventoryConfiguration(input *DeleteBucketInventoryConf
 
 const opDeleteBucketLifecycle = "DeleteBucketLifecycle"
 
-// DeleteBucketLifecycleRequest generates a "aws/request.Request" representing the
+// DeleteBucketLifecycleRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketLifecycle operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -649,7 +649,7 @@ func (c *S3) DeleteBucketLifecycle(input *DeleteBucketLifecycleInput) (*DeleteBu
 
 const opDeleteBucketMetricsConfiguration = "DeleteBucketMetricsConfiguration"
 
-// DeleteBucketMetricsConfigurationRequest generates a "aws/request.Request" representing the
+// DeleteBucketMetricsConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketMetricsConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -711,7 +711,7 @@ func (c *S3) DeleteBucketMetricsConfiguration(input *DeleteBucketMetricsConfigur
 
 const opDeleteBucketPolicy = "DeleteBucketPolicy"
 
-// DeleteBucketPolicyRequest generates a "aws/request.Request" representing the
+// DeleteBucketPolicyRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketPolicy operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -772,7 +772,7 @@ func (c *S3) DeleteBucketPolicy(input *DeleteBucketPolicyInput) (*DeleteBucketPo
 
 const opDeleteBucketReplication = "DeleteBucketReplication"
 
-// DeleteBucketReplicationRequest generates a "aws/request.Request" representing the
+// DeleteBucketReplicationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketReplication operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -833,7 +833,7 @@ func (c *S3) DeleteBucketReplication(input *DeleteBucketReplicationInput) (*Dele
 
 const opDeleteBucketTagging = "DeleteBucketTagging"
 
-// DeleteBucketTaggingRequest generates a "aws/request.Request" representing the
+// DeleteBucketTaggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketTagging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -894,7 +894,7 @@ func (c *S3) DeleteBucketTagging(input *DeleteBucketTaggingInput) (*DeleteBucket
 
 const opDeleteBucketWebsite = "DeleteBucketWebsite"
 
-// DeleteBucketWebsiteRequest generates a "aws/request.Request" representing the
+// DeleteBucketWebsiteRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteBucketWebsite operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -955,7 +955,7 @@ func (c *S3) DeleteBucketWebsite(input *DeleteBucketWebsiteInput) (*DeleteBucket
 
 const opDeleteObject = "DeleteObject"
 
-// DeleteObjectRequest generates a "aws/request.Request" representing the
+// DeleteObjectRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteObject operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1016,7 +1016,7 @@ func (c *S3) DeleteObject(input *DeleteObjectInput) (*DeleteObjectOutput, error)
 
 const opDeleteObjectTagging = "DeleteObjectTagging"
 
-// DeleteObjectTaggingRequest generates a "aws/request.Request" representing the
+// DeleteObjectTaggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteObjectTagging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1075,7 +1075,7 @@ func (c *S3) DeleteObjectTagging(input *DeleteObjectTaggingInput) (*DeleteObject
 
 const opDeleteObjects = "DeleteObjects"
 
-// DeleteObjectsRequest generates a "aws/request.Request" representing the
+// DeleteObjectsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the DeleteObjects operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1135,7 +1135,7 @@ func (c *S3) DeleteObjects(input *DeleteObjectsInput) (*DeleteObjectsOutput, err
 
 const opGetBucketAccelerateConfiguration = "GetBucketAccelerateConfiguration"
 
-// GetBucketAccelerateConfigurationRequest generates a "aws/request.Request" representing the
+// GetBucketAccelerateConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketAccelerateConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1194,7 +1194,7 @@ func (c *S3) GetBucketAccelerateConfiguration(input *GetBucketAccelerateConfigur
 
 const opGetBucketAcl = "GetBucketAcl"
 
-// GetBucketAclRequest generates a "aws/request.Request" representing the
+// GetBucketAclRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketAcl operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1253,7 +1253,7 @@ func (c *S3) GetBucketAcl(input *GetBucketAclInput) (*GetBucketAclOutput, error)
 
 const opGetBucketAnalyticsConfiguration = "GetBucketAnalyticsConfiguration"
 
-// GetBucketAnalyticsConfigurationRequest generates a "aws/request.Request" representing the
+// GetBucketAnalyticsConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketAnalyticsConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1313,7 +1313,7 @@ func (c *S3) GetBucketAnalyticsConfiguration(input *GetBucketAnalyticsConfigurat
 
 const opGetBucketCors = "GetBucketCors"
 
-// GetBucketCorsRequest generates a "aws/request.Request" representing the
+// GetBucketCorsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketCors operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1372,7 +1372,7 @@ func (c *S3) GetBucketCors(input *GetBucketCorsInput) (*GetBucketCorsOutput, err
 
 const opGetBucketInventoryConfiguration = "GetBucketInventoryConfiguration"
 
-// GetBucketInventoryConfigurationRequest generates a "aws/request.Request" representing the
+// GetBucketInventoryConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketInventoryConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1432,7 +1432,7 @@ func (c *S3) GetBucketInventoryConfiguration(input *GetBucketInventoryConfigurat
 
 const opGetBucketLifecycle = "GetBucketLifecycle"
 
-// GetBucketLifecycleRequest generates a "aws/request.Request" representing the
+// GetBucketLifecycleRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketLifecycle operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1494,7 +1494,7 @@ func (c *S3) GetBucketLifecycle(input *GetBucketLifecycleInput) (*GetBucketLifec
 
 const opGetBucketLifecycleConfiguration = "GetBucketLifecycleConfiguration"
 
-// GetBucketLifecycleConfigurationRequest generates a "aws/request.Request" representing the
+// GetBucketLifecycleConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketLifecycleConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1553,7 +1553,7 @@ func (c *S3) GetBucketLifecycleConfiguration(input *GetBucketLifecycleConfigurat
 
 const opGetBucketLocation = "GetBucketLocation"
 
-// GetBucketLocationRequest generates a "aws/request.Request" representing the
+// GetBucketLocationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketLocation operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1612,7 +1612,7 @@ func (c *S3) GetBucketLocation(input *GetBucketLocationInput) (*GetBucketLocatio
 
 const opGetBucketLogging = "GetBucketLogging"
 
-// GetBucketLoggingRequest generates a "aws/request.Request" representing the
+// GetBucketLoggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketLogging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1672,7 +1672,7 @@ func (c *S3) GetBucketLogging(input *GetBucketLoggingInput) (*GetBucketLoggingOu
 
 const opGetBucketMetricsConfiguration = "GetBucketMetricsConfiguration"
 
-// GetBucketMetricsConfigurationRequest generates a "aws/request.Request" representing the
+// GetBucketMetricsConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketMetricsConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1732,7 +1732,7 @@ func (c *S3) GetBucketMetricsConfiguration(input *GetBucketMetricsConfigurationI
 
 const opGetBucketNotification = "GetBucketNotification"
 
-// GetBucketNotificationRequest generates a "aws/request.Request" representing the
+// GetBucketNotificationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketNotification operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1794,7 +1794,7 @@ func (c *S3) GetBucketNotification(input *GetBucketNotificationConfigurationRequ
 
 const opGetBucketNotificationConfiguration = "GetBucketNotificationConfiguration"
 
-// GetBucketNotificationConfigurationRequest generates a "aws/request.Request" representing the
+// GetBucketNotificationConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketNotificationConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1853,7 +1853,7 @@ func (c *S3) GetBucketNotificationConfiguration(input *GetBucketNotificationConf
 
 const opGetBucketPolicy = "GetBucketPolicy"
 
-// GetBucketPolicyRequest generates a "aws/request.Request" representing the
+// GetBucketPolicyRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketPolicy operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1912,7 +1912,7 @@ func (c *S3) GetBucketPolicy(input *GetBucketPolicyInput) (*GetBucketPolicyOutpu
 
 const opGetBucketReplication = "GetBucketReplication"
 
-// GetBucketReplicationRequest generates a "aws/request.Request" representing the
+// GetBucketReplicationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketReplication operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -1971,7 +1971,7 @@ func (c *S3) GetBucketReplication(input *GetBucketReplicationInput) (*GetBucketR
 
 const opGetBucketRequestPayment = "GetBucketRequestPayment"
 
-// GetBucketRequestPaymentRequest generates a "aws/request.Request" representing the
+// GetBucketRequestPaymentRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketRequestPayment operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2030,7 +2030,7 @@ func (c *S3) GetBucketRequestPayment(input *GetBucketRequestPaymentInput) (*GetB
 
 const opGetBucketTagging = "GetBucketTagging"
 
-// GetBucketTaggingRequest generates a "aws/request.Request" representing the
+// GetBucketTaggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketTagging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2089,7 +2089,7 @@ func (c *S3) GetBucketTagging(input *GetBucketTaggingInput) (*GetBucketTaggingOu
 
 const opGetBucketVersioning = "GetBucketVersioning"
 
-// GetBucketVersioningRequest generates a "aws/request.Request" representing the
+// GetBucketVersioningRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketVersioning operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2148,7 +2148,7 @@ func (c *S3) GetBucketVersioning(input *GetBucketVersioningInput) (*GetBucketVer
 
 const opGetBucketWebsite = "GetBucketWebsite"
 
-// GetBucketWebsiteRequest generates a "aws/request.Request" representing the
+// GetBucketWebsiteRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetBucketWebsite operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2207,7 +2207,7 @@ func (c *S3) GetBucketWebsite(input *GetBucketWebsiteInput) (*GetBucketWebsiteOu
 
 const opGetObject = "GetObject"
 
-// GetObjectRequest generates a "aws/request.Request" representing the
+// GetObjectRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetObject operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2271,7 +2271,7 @@ func (c *S3) GetObject(input *GetObjectInput) (*GetObjectOutput, error) {
 
 const opGetObjectAcl = "GetObjectAcl"
 
-// GetObjectAclRequest generates a "aws/request.Request" representing the
+// GetObjectAclRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetObjectAcl operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2335,7 +2335,7 @@ func (c *S3) GetObjectAcl(input *GetObjectAclInput) (*GetObjectAclOutput, error)
 
 const opGetObjectTagging = "GetObjectTagging"
 
-// GetObjectTaggingRequest generates a "aws/request.Request" representing the
+// GetObjectTaggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetObjectTagging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2394,7 +2394,7 @@ func (c *S3) GetObjectTagging(input *GetObjectTaggingInput) (*GetObjectTaggingOu
 
 const opGetObjectTorrent = "GetObjectTorrent"
 
-// GetObjectTorrentRequest generates a "aws/request.Request" representing the
+// GetObjectTorrentRequest generates a "ons_aws/request.Request" representing the
 // client's request for the GetObjectTorrent operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2453,7 +2453,7 @@ func (c *S3) GetObjectTorrent(input *GetObjectTorrentInput) (*GetObjectTorrentOu
 
 const opHeadBucket = "HeadBucket"
 
-// HeadBucketRequest generates a "aws/request.Request" representing the
+// HeadBucketRequest generates a "ons_aws/request.Request" representing the
 // client's request for the HeadBucket operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2520,7 +2520,7 @@ func (c *S3) HeadBucket(input *HeadBucketInput) (*HeadBucketOutput, error) {
 
 const opHeadObject = "HeadObject"
 
-// HeadObjectRequest generates a "aws/request.Request" representing the
+// HeadObjectRequest generates a "ons_aws/request.Request" representing the
 // client's request for the HeadObject operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2586,7 +2586,7 @@ func (c *S3) HeadObject(input *HeadObjectInput) (*HeadObjectOutput, error) {
 
 const opListBucketAnalyticsConfigurations = "ListBucketAnalyticsConfigurations"
 
-// ListBucketAnalyticsConfigurationsRequest generates a "aws/request.Request" representing the
+// ListBucketAnalyticsConfigurationsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListBucketAnalyticsConfigurations operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2645,7 +2645,7 @@ func (c *S3) ListBucketAnalyticsConfigurations(input *ListBucketAnalyticsConfigu
 
 const opListBucketInventoryConfigurations = "ListBucketInventoryConfigurations"
 
-// ListBucketInventoryConfigurationsRequest generates a "aws/request.Request" representing the
+// ListBucketInventoryConfigurationsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListBucketInventoryConfigurations operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2704,7 +2704,7 @@ func (c *S3) ListBucketInventoryConfigurations(input *ListBucketInventoryConfigu
 
 const opListBucketMetricsConfigurations = "ListBucketMetricsConfigurations"
 
-// ListBucketMetricsConfigurationsRequest generates a "aws/request.Request" representing the
+// ListBucketMetricsConfigurationsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListBucketMetricsConfigurations operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2763,7 +2763,7 @@ func (c *S3) ListBucketMetricsConfigurations(input *ListBucketMetricsConfigurati
 
 const opListBuckets = "ListBuckets"
 
-// ListBucketsRequest generates a "aws/request.Request" representing the
+// ListBucketsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListBuckets operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2822,7 +2822,7 @@ func (c *S3) ListBuckets(input *ListBucketsInput) (*ListBucketsOutput, error) {
 
 const opListMultipartUploads = "ListMultipartUploads"
 
-// ListMultipartUploadsRequest generates a "aws/request.Request" representing the
+// ListMultipartUploadsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListMultipartUploads operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -2912,7 +2912,7 @@ func (c *S3) ListMultipartUploadsPages(input *ListMultipartUploadsInput, fn func
 
 const opListObjectVersions = "ListObjectVersions"
 
-// ListObjectVersionsRequest generates a "aws/request.Request" representing the
+// ListObjectVersionsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListObjectVersions operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3002,7 +3002,7 @@ func (c *S3) ListObjectVersionsPages(input *ListObjectVersionsInput, fn func(p *
 
 const opListObjects = "ListObjects"
 
-// ListObjectsRequest generates a "aws/request.Request" representing the
+// ListObjectsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListObjects operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3099,7 +3099,7 @@ func (c *S3) ListObjectsPages(input *ListObjectsInput, fn func(p *ListObjectsOut
 
 const opListObjectsV2 = "ListObjectsV2"
 
-// ListObjectsV2Request generates a "aws/request.Request" representing the
+// ListObjectsV2Request generates a "ons_aws/request.Request" representing the
 // client's request for the ListObjectsV2 operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3197,7 +3197,7 @@ func (c *S3) ListObjectsV2Pages(input *ListObjectsV2Input, fn func(p *ListObject
 
 const opListParts = "ListParts"
 
-// ListPartsRequest generates a "aws/request.Request" representing the
+// ListPartsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the ListParts operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3287,7 +3287,7 @@ func (c *S3) ListPartsPages(input *ListPartsInput, fn func(p *ListPartsOutput, l
 
 const opPutBucketAccelerateConfiguration = "PutBucketAccelerateConfiguration"
 
-// PutBucketAccelerateConfigurationRequest generates a "aws/request.Request" representing the
+// PutBucketAccelerateConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketAccelerateConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3348,7 +3348,7 @@ func (c *S3) PutBucketAccelerateConfiguration(input *PutBucketAccelerateConfigur
 
 const opPutBucketAcl = "PutBucketAcl"
 
-// PutBucketAclRequest generates a "aws/request.Request" representing the
+// PutBucketAclRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketAcl operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3409,7 +3409,7 @@ func (c *S3) PutBucketAcl(input *PutBucketAclInput) (*PutBucketAclOutput, error)
 
 const opPutBucketAnalyticsConfiguration = "PutBucketAnalyticsConfiguration"
 
-// PutBucketAnalyticsConfigurationRequest generates a "aws/request.Request" representing the
+// PutBucketAnalyticsConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketAnalyticsConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3471,7 +3471,7 @@ func (c *S3) PutBucketAnalyticsConfiguration(input *PutBucketAnalyticsConfigurat
 
 const opPutBucketCors = "PutBucketCors"
 
-// PutBucketCorsRequest generates a "aws/request.Request" representing the
+// PutBucketCorsRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketCors operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3532,7 +3532,7 @@ func (c *S3) PutBucketCors(input *PutBucketCorsInput) (*PutBucketCorsOutput, err
 
 const opPutBucketInventoryConfiguration = "PutBucketInventoryConfiguration"
 
-// PutBucketInventoryConfigurationRequest generates a "aws/request.Request" representing the
+// PutBucketInventoryConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketInventoryConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3594,7 +3594,7 @@ func (c *S3) PutBucketInventoryConfiguration(input *PutBucketInventoryConfigurat
 
 const opPutBucketLifecycle = "PutBucketLifecycle"
 
-// PutBucketLifecycleRequest generates a "aws/request.Request" representing the
+// PutBucketLifecycleRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketLifecycle operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3658,7 +3658,7 @@ func (c *S3) PutBucketLifecycle(input *PutBucketLifecycleInput) (*PutBucketLifec
 
 const opPutBucketLifecycleConfiguration = "PutBucketLifecycleConfiguration"
 
-// PutBucketLifecycleConfigurationRequest generates a "aws/request.Request" representing the
+// PutBucketLifecycleConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketLifecycleConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3720,7 +3720,7 @@ func (c *S3) PutBucketLifecycleConfiguration(input *PutBucketLifecycleConfigurat
 
 const opPutBucketLogging = "PutBucketLogging"
 
-// PutBucketLoggingRequest generates a "aws/request.Request" representing the
+// PutBucketLoggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketLogging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3783,7 +3783,7 @@ func (c *S3) PutBucketLogging(input *PutBucketLoggingInput) (*PutBucketLoggingOu
 
 const opPutBucketMetricsConfiguration = "PutBucketMetricsConfiguration"
 
-// PutBucketMetricsConfigurationRequest generates a "aws/request.Request" representing the
+// PutBucketMetricsConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketMetricsConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3845,7 +3845,7 @@ func (c *S3) PutBucketMetricsConfiguration(input *PutBucketMetricsConfigurationI
 
 const opPutBucketNotification = "PutBucketNotification"
 
-// PutBucketNotificationRequest generates a "aws/request.Request" representing the
+// PutBucketNotificationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketNotification operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3909,7 +3909,7 @@ func (c *S3) PutBucketNotification(input *PutBucketNotificationInput) (*PutBucke
 
 const opPutBucketNotificationConfiguration = "PutBucketNotificationConfiguration"
 
-// PutBucketNotificationConfigurationRequest generates a "aws/request.Request" representing the
+// PutBucketNotificationConfigurationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketNotificationConfiguration operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -3970,7 +3970,7 @@ func (c *S3) PutBucketNotificationConfiguration(input *PutBucketNotificationConf
 
 const opPutBucketPolicy = "PutBucketPolicy"
 
-// PutBucketPolicyRequest generates a "aws/request.Request" representing the
+// PutBucketPolicyRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketPolicy operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4032,7 +4032,7 @@ func (c *S3) PutBucketPolicy(input *PutBucketPolicyInput) (*PutBucketPolicyOutpu
 
 const opPutBucketReplication = "PutBucketReplication"
 
-// PutBucketReplicationRequest generates a "aws/request.Request" representing the
+// PutBucketReplicationRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketReplication operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4094,7 +4094,7 @@ func (c *S3) PutBucketReplication(input *PutBucketReplicationInput) (*PutBucketR
 
 const opPutBucketRequestPayment = "PutBucketRequestPayment"
 
-// PutBucketRequestPaymentRequest generates a "aws/request.Request" representing the
+// PutBucketRequestPaymentRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketRequestPayment operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4159,7 +4159,7 @@ func (c *S3) PutBucketRequestPayment(input *PutBucketRequestPaymentInput) (*PutB
 
 const opPutBucketTagging = "PutBucketTagging"
 
-// PutBucketTaggingRequest generates a "aws/request.Request" representing the
+// PutBucketTaggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketTagging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4220,7 +4220,7 @@ func (c *S3) PutBucketTagging(input *PutBucketTaggingInput) (*PutBucketTaggingOu
 
 const opPutBucketVersioning = "PutBucketVersioning"
 
-// PutBucketVersioningRequest generates a "aws/request.Request" representing the
+// PutBucketVersioningRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketVersioning operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4282,7 +4282,7 @@ func (c *S3) PutBucketVersioning(input *PutBucketVersioningInput) (*PutBucketVer
 
 const opPutBucketWebsite = "PutBucketWebsite"
 
-// PutBucketWebsiteRequest generates a "aws/request.Request" representing the
+// PutBucketWebsiteRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutBucketWebsite operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4343,7 +4343,7 @@ func (c *S3) PutBucketWebsite(input *PutBucketWebsiteInput) (*PutBucketWebsiteOu
 
 const opPutObject = "PutObject"
 
-// PutObjectRequest generates a "aws/request.Request" representing the
+// PutObjectRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutObject operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4402,7 +4402,7 @@ func (c *S3) PutObject(input *PutObjectInput) (*PutObjectOutput, error) {
 
 const opPutObjectAcl = "PutObjectAcl"
 
-// PutObjectAclRequest generates a "aws/request.Request" representing the
+// PutObjectAclRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutObjectAcl operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4467,7 +4467,7 @@ func (c *S3) PutObjectAcl(input *PutObjectAclInput) (*PutObjectAclOutput, error)
 
 const opPutObjectTagging = "PutObjectTagging"
 
-// PutObjectTaggingRequest generates a "aws/request.Request" representing the
+// PutObjectTaggingRequest generates a "ons_aws/request.Request" representing the
 // client's request for the PutObjectTagging operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4526,7 +4526,7 @@ func (c *S3) PutObjectTagging(input *PutObjectTaggingInput) (*PutObjectTaggingOu
 
 const opRestoreObject = "RestoreObject"
 
-// RestoreObjectRequest generates a "aws/request.Request" representing the
+// RestoreObjectRequest generates a "ons_aws/request.Request" representing the
 // client's request for the RestoreObject operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4590,7 +4590,7 @@ func (c *S3) RestoreObject(input *RestoreObjectInput) (*RestoreObjectOutput, err
 
 const opUploadPart = "UploadPart"
 
-// UploadPartRequest generates a "aws/request.Request" representing the
+// UploadPartRequest generates a "ons_aws/request.Request" representing the
 // client's request for the UploadPart operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -4655,7 +4655,7 @@ func (c *S3) UploadPart(input *UploadPartInput) (*UploadPartOutput, error) {
 
 const opUploadPartCopy = "UploadPartCopy"
 
-// UploadPartCopyRequest generates a "aws/request.Request" representing the
+// UploadPartCopyRequest generates a "ons_aws/request.Request" representing the
 // client's request for the UploadPartCopy operation. The "output" return
 // value can be used to capture response data after the request's "Send" method
 // is called.
@@ -5642,10 +5642,10 @@ type CompleteMultipartUploadOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// Version of the object.
@@ -5921,10 +5921,10 @@ type CopyObjectInput struct {
 	// requests for an object protected by AWS KMS will fail if not made via SSL
 	// or using SigV4. Documentation on configuring any of the officially supported
 	// AWS SDKs and CLI can be found at http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingAWSSDK.html#specify-signature-version
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// The type of storage to use for the object. Defaults to 'STANDARD'.
@@ -6201,10 +6201,10 @@ type CopyObjectOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// Version ID of the newly created copy.
@@ -6554,10 +6554,10 @@ type CreateMultipartUploadInput struct {
 	// requests for an object protected by AWS KMS will fail if not made via SSL
 	// or using SigV4. Documentation on configuring any of the officially supported
 	// AWS SDKs and CLI can be found at http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingAWSSDK.html#specify-signature-version
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// The type of storage to use for the object. Defaults to 'STANDARD'.
@@ -6762,10 +6762,10 @@ type CreateMultipartUploadOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// ID for the initiated multipart upload.
@@ -9533,10 +9533,10 @@ type GetObjectOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	StorageClass *string `location:"header" locationName:"x-amz-storage-class" type:"string" enum:"StorageClass"`
@@ -10374,10 +10374,10 @@ type HeadObjectOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	StorageClass *string `location:"header" locationName:"x-amz-storage-class" type:"string" enum:"StorageClass"`
@@ -15150,10 +15150,10 @@ type PutObjectInput struct {
 	// requests for an object protected by AWS KMS will fail if not made via SSL
 	// or using SigV4. Documentation on configuring any of the officially supported
 	// AWS SDKs and CLI can be found at http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingAWSSDK.html#specify-signature-version
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// The type of storage to use for the object. Defaults to 'STANDARD'.
@@ -15373,10 +15373,10 @@ type PutObjectOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 
 	// Version of the object.
@@ -16948,10 +16948,10 @@ type UploadPartCopyOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 }
 
@@ -17178,10 +17178,10 @@ type UploadPartOutput struct {
 
 	// If present, specifies the ID of the AWS Key Management Service (KMS) master
 	// encryption key that was used for the object.
-	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-aws-kms-key-id" type:"string"`
+	SSEKMSKeyId *string `location:"header" locationName:"x-amz-server-side-encryption-ons_aws-kms-key-id" type:"string"`
 
 	// The Server-side encryption algorithm used when storing this object in S3
-	// (e.g., AES256, aws:kms).
+	// (e.g., AES256, ons_aws:kms).
 	ServerSideEncryption *string `location:"header" locationName:"x-amz-server-side-encryption" type:"string" enum:"ServerSideEncryption"`
 }
 
@@ -17563,7 +17563,7 @@ const (
 	ObjectCannedACLAuthenticatedRead = "authenticated-read"
 
 	// ObjectCannedACLAwsExecRead is a ObjectCannedACL enum value
-	ObjectCannedACLAwsExecRead = "aws-exec-read"
+	ObjectCannedACLAwsExecRead = "ons_aws-exec-read"
 
 	// ObjectCannedACLBucketOwnerRead is a ObjectCannedACL enum value
 	ObjectCannedACLBucketOwnerRead = "bucket-owner-read"
@@ -17664,7 +17664,7 @@ const (
 	ServerSideEncryptionAes256 = "AES256"
 
 	// ServerSideEncryptionAwsKms is a ServerSideEncryption enum value
-	ServerSideEncryptionAwsKms = "aws:kms"
+	ServerSideEncryptionAwsKms = "ons_aws:kms"
 )
 
 const (
