@@ -11,6 +11,7 @@ import (
 	"github.com/ONSdigital/dp-csv-splitter/message/event"
 	"github.com/ONSdigital/go-ns/log"
 	"github.com/Shopify/sarama"
+	"github.com/satori/go.uuid"
 )
 
 var Producer sarama.SyncProducer
@@ -34,6 +35,7 @@ type RowMessage struct {
 	StartTime int64  `json:"startTime"`
 	DatasetID string `json:"datasetID"`
 	S3URL     string `json:"s3URL"`
+	RowID     string `json:"rowID"`
 }
 
 type DatasetSplitEvent struct {
@@ -136,6 +138,7 @@ func createMessage(row string, index int, event *event.FileUploaded, startTime t
 		S3URL:     event.GetURL(),
 		StartTime: startTime.UTC().Unix(),
 		DatasetID: datasetID,
+		RowID:     uuid.NewV4().String(),
 	}
 
 	messageJSON, err := json.Marshal(message)
